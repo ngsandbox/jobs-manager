@@ -29,7 +29,7 @@ public class JobService implements AutoCloseable {
                         JobStrategy::getCode,
                         o -> o,
                         (o, o2) -> {
-                            throw new JobException("Collision detected for strategy code " + o.getCode());
+                            throw new IllegalStateException("Collision detected for strategy code " + o.getCode());
                         }));
         this.strategies = Collections.unmodifiableMap(jobStrategyMap);
         this.scheduler = Schedulers.fromExecutorService(executorService);
@@ -58,11 +58,8 @@ public class JobService implements AutoCloseable {
     @SuppressWarnings("unchecked")
     private <T extends JobDetail> Mono<Job<T>> runJob(Job<T> job, JobStrategy<T> jobStrategy) {
         try {
-
             Mono<Job<T>> runMono = jobStrategy.run(job);
-            Mono<Job<T>> successMono = runMono
-                    .map(o -> o.toStatus(JobStatus.SUCCESS));
-            Mono<Job<T>> onErrorMono = successMono
+            Mono<Job<T>> onErrorMono = runMono
                     .onErrorResume((ex) -> onJobError(job, ex));
             return onErrorMono.subscribeOn(scheduler);
         } catch (Exception ex) {

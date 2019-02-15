@@ -36,7 +36,7 @@ public class Job<T extends JobDetail> {
         return new Job<>(UUID.randomUUID().toString(), LocalDateTime.now(), jobDetail, JobStatus.QUEUED, null);
     }
 
-    Job toStatus(@NonNull JobStatus status) {
+    public Job toStatus(@NonNull JobStatus status) {
         return toStatus(status, null);
     }
 
