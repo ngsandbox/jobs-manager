@@ -1,0 +1,6 @@
+dependencies {
+    compile project(":common")
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: project['spring-cloud.version']
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc', version: project['spring-cloud.version']
+    runtimeOnly group: 'com.h2database', name: 'h2', version: project['h2.version']
+}

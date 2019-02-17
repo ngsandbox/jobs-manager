@@ -26,10 +26,17 @@ subprojects {
     }
 
     dependencies {
+
+        compile group: 'javax.inject', name: 'javax.inject', version: '1'
+        compile group: 'javax.validation', name: 'validation-api', version: '2.0.1.Final'
+        compile group: 'org.hibernate.validator', name: 'hibernate-validator', version: '6.0.14.Final'
+
+
         compile group: 'commons-codec', name: 'commons-codec', version: '1.11'
         compile group: 'commons-io', name: 'commons-io', version: '2.6'
 
-        compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.7'
+        compile group: 'org.apache.commons', name: 'commons-collections4', version: '4.3'
+        compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.8.1'
 
 
         compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: project['jackson.version']
@@ -38,17 +45,27 @@ subprojects {
         compile(group: 'ch.qos.logback', name: 'logback-classic', version: project['logback.version'])
         compile(group: 'ch.qos.logback', name: 'logback-core', version: project['logback.version'])
 
+        compile "com.fasterxml.jackson.core:jackson-core:${project['com.fasterxml.jackson.version']}"
+        compile "com.fasterxml.jackson.core:jackson-databind:${project['com.fasterxml.jackson.version']}"
+        compile "com.fasterxml.jackson.core:jackson-annotations:${project['com.fasterxml.jackson.version']}"
+        compile "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:${project['com.fasterxml.jackson.version']}"
+        compile "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${project["com.fasterxml.jackson.version"]}"
 
         compileOnly group: 'org.projectlombok', name: 'lombok', version: project['lombok.version']
         annotationProcessor group: 'org.projectlombok', name: 'lombok', version: project['lombok.version']
 
         compile group: 'org.springframework.boot', name: 'spring-boot', version: project['spring-cloud.version']
+        compileOnly group: 'org.springframework.boot', name: 'spring-boot-configuration-processor', version: project['spring-cloud.version']
+
         // https://mvnrepository.com/artifact/io.projectreactor/reactor-core
         compile group: 'io.projectreactor', name: 'reactor-core', version: project['reactor.version']
 
+        testCompile group: 'org.hibernate.validator', name: 'hibernate-validator', version: '6.0.14.Final'
         testCompile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: project['jackson.version']
         testImplementation "org.junit.jupiter:junit-jupiter-api:${project['junit-jupiter.version']}"
         testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${project['junit-jupiter.version']}"
+
+        testCompileOnly group: 'org.springframework.boot', name: 'spring-boot-configuration-processor', version: project['spring-cloud.version']
 
         testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: project['spring-cloud.version']
         testImplementation group: 'io.projectreactor', name: 'reactor-test', version: project['reactor.version']

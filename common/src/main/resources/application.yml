@@ -1,0 +1,4 @@
+org:
+  jobs:
+    manager:
+      paralelizm: 2

@@ -1,4 +1,8 @@
+dependencies{
+    compile project(":shared")
+
+    testCompile project(":shared")
+}
 test {
-    // Enable JUnit 5 (Gradle 4.6+).
     useJUnitPlatform()
 }
