@@ -1,6 +1,6 @@
 package org.jobs.manager.db.repositories;
 
-import org.jobs.manager.db.entities.TaskDetailEntity;
+import org.jobs.manager.db.model.TaskDetailEntity;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;

@@ -9,7 +9,7 @@ public class CloseUtils {
        try {
            runnable.run();
        }catch (Exception ex){
-           log.trace("Error to close runnable ", ex);
+           log.warn("Error to close runnable ", ex);
        }
     }
 }

@@ -62,7 +62,7 @@
         <appender-ref ref="FILE-AUDIT"/>
     </appender>
 
-    <logger name="org.spring.jobs.manager" level="DEBUG" additivity="false">
+    <logger name="org.jobs.manager" level="DEBUG" additivity="false">
         <appender-ref ref="FILE-AUDIT-ASYNC"/>
         <appender-ref ref="STDOUT"/>
     </logger>

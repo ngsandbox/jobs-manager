@@ -9,18 +9,20 @@ import java.io.Serializable;
 
 @Getter
 @ToString
-public class JobTopicEvent implements TopicEvent, Serializable {
+public class JobSubscriptionEvent implements SubscriptionEvent, Serializable {
 
     private static final long serialVersionUID = 1697757597992954891L;
 
     private Job job;
+    private boolean last;
 
-    public JobTopicEvent(Job job) {
+    public JobSubscriptionEvent(Job job, boolean last) {
         this.job = job;
+        this.last = last;
     }
 
     @Override
-    public String getTopicName() {
+    public String getSourceName() {
         return Topics.JOB_TOPIC;
     }
 }

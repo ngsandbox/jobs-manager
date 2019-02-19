@@ -1,6 +1,6 @@
 package org.jobs.manager.db.repositories;
 
-import org.jobs.manager.db.entities.TaskEntity;
+import org.jobs.manager.db.model.TaskEntity;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.Query;

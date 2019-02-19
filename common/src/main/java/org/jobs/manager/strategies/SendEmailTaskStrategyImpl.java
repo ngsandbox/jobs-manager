@@ -4,14 +4,18 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.jobs.manager.entities.EmailTask;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Mono;
 
 @Component
 @ToString(callSuper = true)
 @Slf4j
 public class SendEmailTaskStrategyImpl implements TaskStrategy<EmailTask> {
+
+    public static final String SEND_EMAIL_STRATEGY_CODE = "SEND_EMAIL";
+
     @Override
     public String getCode() {
-        return "SEND_EMAIL";
+        return SEND_EMAIL_STRATEGY_CODE;
     }
 
     @Override
@@ -20,6 +24,7 @@ public class SendEmailTaskStrategyImpl implements TaskStrategy<EmailTask> {
     }
 
     @Override
-    public void execute(EmailTask task) {
+    public Mono<Void> execute(EmailTask task) {
+        return Mono.empty();
     }
 }

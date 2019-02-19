@@ -7,9 +7,25 @@ import java.util.Optional;
 public interface Scheduler extends Serializable {
 
     /**
+     * Unique code of the scheduler
+     */
+    String getCode();
+
+    /**
+     * The String representation of the schedule
+     */
+    String getExpression();
+
+    /**
      * Get starting date time execution
      */
     LocalDateTime getStartDate();
+
+    /**
+     * Priority MAX_VALUE - highest, MIN_VALUE - lowest
+     */
+    int getPriority();
+
 
     /**
      * Return true if {@link #getStartDate()} is less than current time

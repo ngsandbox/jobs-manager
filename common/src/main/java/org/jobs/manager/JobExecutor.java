@@ -4,8 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.jobs.manager.entities.Job;
 import org.jobs.manager.entities.Task;
 import org.jobs.manager.entities.TaskStatus;
-import org.jobs.manager.events.JobTopicEvent;
-import org.jobs.manager.events.TopicService;
+import org.jobs.manager.events.JobSubscriptionEvent;
+import org.jobs.manager.events.SubscriptionService;
 import org.jobs.manager.strategies.TaskStrategy;
 import org.reactivestreams.Publisher;
 import reactor.core.publisher.Flux;
@@ -26,16 +26,16 @@ import static org.jobs.manager.utils.CloseUtils.closeQuite;
 @Slf4j
 public class JobExecutor implements AutoCloseable {
 
-    private final TopicService topicService;
+    private final SubscriptionService subscriptionService;
     private final ExecutorService executorService;
     private final Map<String, TaskStrategy<? extends Task>> strategies;
     private final Scheduler scheduler;
     private final AtomicInteger slotsCount;
 
     JobExecutor(int threadCount,
-                TopicService topicService,
+                SubscriptionService subscriptionService,
                 List<TaskStrategy<? extends Task>> strategies) {
-        this.topicService = topicService;
+        this.subscriptionService = subscriptionService;
         slotsCount = new AtomicInteger(threadCount);
         executorService = Executors.newFixedThreadPool(threadCount);
         Map<String, ? extends TaskStrategy<? extends Task>> jobStrategyMap = strategies.stream()
@@ -67,8 +67,9 @@ public class JobExecutor implements AutoCloseable {
         if (taskStrategy == null) {
             return justError(job, String.format("Strategy with code %s was not found for job id %s", job.getTask().getStrategyCode(), job.getId()));
         }
-        if (!job.getTaskSchedule().getSchedule().isReady()) {
-            log.trace("Task is not ready to run {}", job.getId());
+
+        if (!job.getSchedule().isReady()) {
+            log.warn("Task is not ready to run {}", job.getId());
             return Mono.empty();
         }
 
@@ -82,12 +83,12 @@ public class JobExecutor implements AutoCloseable {
 
             Flux<Job<T>> flux = Flux.concat(
                     Mono.just(job.toStatus(TaskStatus.RUNNING)),
-                    Mono.fromRunnable(() -> taskStrategy.execute(job.getTask())),
+                    taskStrategy.execute(job.getTask()).flatMap(aVoid -> Mono.empty()),
                     Mono.just(job.toStatus(TaskStatus.SUCCESS))
-
             );
+
             Flux<Job<T>> onErrorFlux = flux
-                    .doOnNext(tJob -> topicService.publish(new JobTopicEvent(tJob)))
+                    .doOnNext(tJob -> subscriptionService.publish(new JobSubscriptionEvent(tJob, false)))
                     .doOnComplete(slotsCount::incrementAndGet) // increment back available slots
                     .onErrorResume((ex) -> onFluxError(job, ex));
             return onErrorFlux.subscribeOn(scheduler);
@@ -101,7 +102,7 @@ public class JobExecutor implements AutoCloseable {
 
     private <T extends Task> Mono<Job<T>> justError(Job<T> job, String error) {
         Mono<Job<T>> just = Mono.just(job.toStatus(TaskStatus.FAILED, error));
-        return just.doOnNext(j -> topicService.publish(new JobTopicEvent(j)));
+        return just.doOnNext(j -> subscriptionService.publish(new JobSubscriptionEvent(j, true)));
     }
 
     private <T extends Task> Mono<Job<T>> onFluxError(Job<T> job, Throwable ex) {
@@ -112,7 +113,7 @@ public class JobExecutor implements AutoCloseable {
 
     @Override
     public void close() {
-        log.info("Close the job service");
+        log.warn("Close the job executor");
         if (!executorService.isShutdown()) {
             closeQuite(executorService::shutdown);
         }

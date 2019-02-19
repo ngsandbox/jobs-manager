@@ -27,7 +27,7 @@ public class Task implements Serializable {
 
     private final Map<String, String> details;
 
-
+    @Builder
     public Task(@NonNull String id,
                 @NonNull String strategyCode,
                 @NonNull Map<String, String> details) {

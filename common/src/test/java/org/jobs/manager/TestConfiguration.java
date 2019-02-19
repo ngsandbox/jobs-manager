@@ -5,10 +5,10 @@ import org.jobs.manager.configs.JobManagerProperties;
 import org.jobs.manager.configs.StrategyConverter;
 import org.jobs.manager.dao.JobDAO;
 import org.jobs.manager.entities.Task;
-import org.jobs.manager.events.TopicService;
+import org.jobs.manager.events.InMemorySubscriptionService;
+import org.jobs.manager.events.SubscriptionService;
 import org.jobs.manager.strategies.TaskStrategy;
 import org.jobs.manager.stubs.TestJobsDAOImpl;
-import org.jobs.manager.stubs.TestTopicServiceImpl;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -30,9 +30,9 @@ public class TestConfiguration {
 
     @Qualifier("test")
     @Bean
-    public TopicService getTopicService() {
+    public SubscriptionService getTopicService() {
         log.info("Inialize test topic service");
-        return new TestTopicServiceImpl();
+        return new InMemorySubscriptionService();
     }
 
     @Qualifier("test")
@@ -52,10 +52,10 @@ public class TestConfiguration {
 
     @Bean
     public JobExecutor getJobExecutor(
-            @Qualifier("test") TopicService topicService,
+            @Qualifier("test") SubscriptionService subscriptionService,
             List<TaskStrategy<? extends Task>> strategies) {
         log.info("initialize test job executor {}", jobManagerProperties);
-        return new JobExecutor(jobManagerProperties.getParalelizm(), topicService, strategies);
+        return new JobExecutor(jobManagerProperties.getParalelizm(), subscriptionService, strategies);
     }
 
     @Bean

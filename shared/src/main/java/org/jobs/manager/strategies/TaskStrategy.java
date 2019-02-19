@@ -1,6 +1,7 @@
 package org.jobs.manager.strategies;
 
 import org.jobs.manager.entities.Task;
+import reactor.core.publisher.Mono;
 
 public interface TaskStrategy<T extends Task> {
 
@@ -14,6 +15,8 @@ public interface TaskStrategy<T extends Task> {
      */
     String getDescription();
 
-
-    void execute(T task);
+    /**
+     * return Mono-wrapper with execution of the provided task
+     */
+    Mono<Void> execute(T task);
 }

@@ -66,8 +66,8 @@ public class JobService implements AutoCloseable {
 
         @Override
         public void hookOnComplete() {
-            log.debug("Job completed for id {}", job.getId());
-            job.getTaskSchedule().getSchedule().next()
+            log.info("Job completed for id {}", job.getId());
+            job.getSchedule().next()
                     .ifPresent(scheduler ->
                             jobDAO.updateTaskScheduler(job.getTask(), scheduler));
         }
@@ -75,6 +75,7 @@ public class JobService implements AutoCloseable {
 
     @Override
     public void close() {
+        log.warn("Close job's  service resources");
         closeQuite(jobExecutor::close);
         closeQuite(scheduler::shutdown);
     }

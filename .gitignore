@@ -16,8 +16,14 @@
 *.iws
 *.iml
 *.ipr
+
+build/
+out/
+logs/
+
+**/build/**
+**/out/**
 **/logs/**
-/out/
 
 ### NetBeans ###
 /nbproject/private/

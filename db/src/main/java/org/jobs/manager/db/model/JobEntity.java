@@ -1,16 +1,14 @@
-package org.jobs.manager.db.entities;
+package org.jobs.manager.db.model;
 
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.jobs.manager.entities.TaskStatus;
+import org.springframework.data.annotation.Id;
 
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.OneToOne;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
-import static javax.persistence.CascadeType.PERSIST;
 
 @Slf4j
 @Getter
@@ -19,7 +17,10 @@ import static javax.persistence.CascadeType.PERSIST;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class JobEntity {
+public class JobEntity implements Serializable {
+
+    private static final long serialVersionUID = -9124289507532315747L;
+
     @Id
     private String id;
 
@@ -32,11 +33,4 @@ public class JobEntity {
     private TaskStatus status;
 
     private LocalDateTime started;
-
-    @OneToOne(fetch = FetchType.EAGER, mappedBy = "taskId", cascade = PERSIST)
-    private TaskEntity task;
-
-    @OneToOne(fetch = FetchType.EAGER, mappedBy = "scheduleId", cascade = PERSIST)
-    private ScheduleEntity schedule;
-
 }

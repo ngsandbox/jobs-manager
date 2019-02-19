@@ -1,12 +1,9 @@
 package org.jobs.manager.entities;
 
 import lombok.*;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang3.ArrayUtils;
 import org.jobs.manager.utils.JsonHelper;
 
-import java.time.LocalDateTime;
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -28,11 +25,11 @@ public class EmailTask extends Task {
     private final String subject;
     private final String body;
 
-    @Builder
+    @Builder(builderMethodName = "testBuilder")
     public EmailTask(String id,
                      String strategyCode,
                      @NonNull String from,
-                     @NonNull List<String> recipients,
+                     @Singular @NonNull List<String> recipients,
                      @NonNull String subject,
                      @NonNull String body) {
         super(id, strategyCode, buildDetails(from, recipients, subject, body));
@@ -58,7 +55,10 @@ public class EmailTask extends Task {
     @Setter
     @AllArgsConstructor
     @NoArgsConstructor
-    private static class Recipients {
+    private static class Recipients implements Serializable {
+
+        private static final long serialVersionUID = -6369863528946758319L;
+
         private List<String> recipients;
     }
 }

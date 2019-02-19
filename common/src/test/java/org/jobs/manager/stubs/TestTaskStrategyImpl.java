@@ -6,6 +6,9 @@ import org.jobs.manager.JobException;
 import org.jobs.manager.TestTask;
 import org.jobs.manager.strategies.TaskStrategy;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Mono;
+
+import java.time.Duration;
 
 @Component
 @ToString(callSuper = true)
@@ -24,20 +27,17 @@ public class TestTaskStrategyImpl implements TaskStrategy<TestTask> {
     }
 
     @Override
-    public void execute(TestTask task) {
+    public Mono<Void> execute(TestTask task) {
         log.info("Run test task {}", task);
-        try {
-            if (task.getTimeoutSecs() != null)
-                Thread.sleep(task.getTimeoutSecs() * 1000);
-        } catch (InterruptedException e) {
-            log.error("Thread was interrupted", e);
-            throw new JobException("Thread fault", e);
+        if (task.isThrowError()) {
+            return Mono.error(new JobException("Test exception for task: " + task.getId()));
         }
 
-        if(task.isThrowError()){
-            throw new JobException("Test exception for task: " + task.getId());
-        }
+        if (task.getTimeoutSecs() != null)
+            return Mono.delay(Duration.ofSeconds(task.getTimeoutSecs()))
+                    .flatMap(aLong -> Mono.empty());
 
         log.info("Finish test job {}", task);
+        return Mono.empty();
     }
 }

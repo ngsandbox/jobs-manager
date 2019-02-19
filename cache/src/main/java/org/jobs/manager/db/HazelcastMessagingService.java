@@ -1,16 +1,15 @@
 package org.jobs.manager.db;
 
-import com.hazelcast.core.IMap;
 import com.hazelcast.core.ITopic;
 import com.hazelcast.core.LifecycleEvent;
-import com.hazelcast.map.listener.MapListener;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
-import org.jobs.manager.events.TopicEvent;
-import org.jobs.manager.events.TopicService;
+import org.jobs.manager.events.SourceListener;
+import org.jobs.manager.events.SubscriptionEvent;
+import org.jobs.manager.events.SubscriptionService;
+import org.jobs.manager.utils.CloseUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 
 import java.util.HashSet;
 import java.util.List;
@@ -18,14 +17,12 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 @Service
 @Slf4j
-public class HazelcastMessagingService extends HazelcastService implements TopicService {
+public class HazelcastMessagingService extends HazelcastService implements SubscriptionService {
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
     private final long reconnectIntervalMs;
     /**
@@ -42,44 +39,31 @@ public class HazelcastMessagingService extends HazelcastService implements Topic
     }
 
     @Override
-    public <T extends TopicEvent> void subscribe(String topicName, Consumer<T> messageListener) {
-        subscriptions.add(new Subscription(
-                regId -> setupTopicLisener(topicName, messageListener, regId)
-        ));
+    public <T extends SubscriptionEvent> Flux<T> subscribe(String sourceName) {
+        return subscribe(sourceName, sourceListener ->
+                subscriptions.add(
+                        new Subscription(sourceListener,
+                                regId -> setupTopicLisener(sourceName, sourceListener, regId)
+                        )));
     }
 
-    private <T extends TopicEvent> String setupTopicLisener(String topicName, Consumer<T> messageListener, String registration) {
+    private <T extends SubscriptionEvent> String setupTopicLisener(String topicName, SourceListener<T> messageListener, String registration) {
         ITopic<T> topic = getTopic(topicName);
         if (registration != null) {
+            log.info("Trying to unregister listener with id {} from {}",
+                    registration, topicName);
             boolean removed = topic.removeMessageListener(registration);
-            log.debug("Trying to unregister listener with id {} from {}, successfully {}",
+            log.info("Unregistered listener with id {} from {}, successfully {}",
                     registration, topicName, removed);
         }
 
         log.debug("Add listener to the topic {}", topicName);
-        return topic.addMessageListener(s -> messageListener.accept(s.getMessageObject()));
-    }
-
-    public void addMapListener(String mapName, MapListener mapListener) {
-        subscriptions.add(new Subscription(
-                regId -> setupMapListener(mapName, mapListener, regId)
-        ));
-    }
-
-    private String setupMapListener(String mapName, MapListener mapListener, String registration) {
-        IMap<Object, Object> map = getMap(mapName);
-        if (registration != null) {
-            boolean removed = map.removeEntryListener(registration);
-            log.debug("Trying to unregister listener with id {} from {}, successfully {}",
-                    registration, mapName, removed);
-        }
-        log.debug("Add listener to the map {}", mapName);
-        return map.addEntryListener(mapListener, true);
+        return topic.addMessageListener(s -> messageListener.emit(s.getMessageObject()));
     }
 
     @Override
-    public <T extends TopicEvent> void publish(T message) {
-        ITopic<T> topic = getTopic(message.getTopicName());
+    public <T extends SubscriptionEvent> void publish(T message) {
+        ITopic<T> topic = getTopic(message.getSourceName());
         log.trace("Publish message to the topic {}", topic.getName());
 
         topic.publish(message);
@@ -93,7 +77,8 @@ public class HazelcastMessagingService extends HazelcastService implements Topic
     @Override
     public void close() {
         log.info("Close db service");
-        executorService.shutdown();
+        CloseUtils.closeQuite(executorService::shutdown);
+        subscriptions.forEach(s -> CloseUtils.closeQuite(s::close));
     }
 
     private void handleLifecycleEvent(LifecycleEvent event) {
@@ -135,32 +120,5 @@ public class HazelcastMessagingService extends HazelcastService implements Topic
         }
     }
 
-    @ToString
-    @EqualsAndHashCode(of = "registrationId")
-    private static class Subscription {
 
-        /**
-         * Current registration id
-         */
-        private final String registrationId;
-
-        /**
-         * Resubscribe action that receives previous registration id and returns new one
-         */
-        private final Function<String, String> subscribeAction;
-
-        private Subscription resubscribe() {
-            return new Subscription(subscribeAction.apply(registrationId), subscribeAction);
-        }
-
-        private Subscription(Function<String, String> subscribeAction) {
-            this(subscribeAction.apply(null), subscribeAction);
-        }
-
-        private Subscription(String registrationId, Function<String, String> subscribeAction) {
-
-            this.registrationId = registrationId;
-            this.subscribeAction = subscribeAction;
-        }
-    }
 }

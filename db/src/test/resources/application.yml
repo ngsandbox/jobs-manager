@@ -1,0 +1,8 @@
+org:
+  jobs:
+    manager:
+      paralelizm: 2
+      strategies:
+        - org.jobs.manager.stubs.TestTaskStrategyImpl
+
+

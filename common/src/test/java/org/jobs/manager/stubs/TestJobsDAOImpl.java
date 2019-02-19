@@ -6,11 +6,10 @@ import org.jobs.manager.TestTask;
 import org.jobs.manager.dao.JobDAO;
 import org.jobs.manager.entities.Job;
 import org.jobs.manager.entities.Task;
-import org.jobs.manager.entities.TaskSchedule;
-import org.jobs.manager.schedulers.CronScheduler;
 import org.jobs.manager.schedulers.Scheduler;
+import org.jobs.manager.schedulers.Schedulers;
+import reactor.core.publisher.Mono;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -24,25 +23,20 @@ public class TestJobsDAOImpl implements JobDAO {
 
     private final List<Job<? extends Task>> history = new CopyOnWriteArrayList<>();
 
+    private final Set<String> busyTasks = ConcurrentHashMap.newKeySet();
+
+    private final Job<TestTask> cronTestTask = getCronTestJob("*/2 * * * * *", 0, null, false);
+
     private <T extends Task> Job<T> getCronTestJob(String pattern, int priority, Integer timeout, boolean throwError) {
-        TestTask task = TestTask.builder()
+        TestTask task = TestTask.testBuilder()
                 .id(UUID.randomUUID().toString())
                 .strategyCode(TestTaskStrategyImpl.TEST_STRATEGY_CODE)
                 .timeoutSecs(timeout)
                 .throwError(throwError)
                 .build();
-        TaskSchedule taskSchedule = TaskSchedule.builder()
-                .id(UUID.randomUUID().toString())
-                .taskId(task.getId())
-                .priority(priority)
-                .schedule(new CronScheduler(pattern))
-                .build();
-        return Job.queued((T) task, taskSchedule);
+
+        return Job.queued((T) task, Schedulers.getCronScheduler(pattern, priority));
     }
-
-    private final Set<String> busyTasks = ConcurrentHashMap.newKeySet();
-
-    private final Job<TestTask> cronTestTask = getCronTestJob("*/2 * * * * *", 0, null, false);
 
     @Override
     public <T extends Task> List<Job<T>> takeJobs(int limit) {
@@ -57,7 +51,9 @@ public class TestJobsDAOImpl implements JobDAO {
     @Override
     public <T extends Task> void updateTaskScheduler(T task, @NonNull Scheduler scheduler) {
         busyTasks.remove(task.getId());
-        cronTestTask.getTaskSchedule().setSchedule(scheduler);
+        if (cronTestTask.getId().equals(task.getId())) {
+            cronTestTask.setSchedule(scheduler);
+        }
     }
 
     @Override
@@ -74,6 +70,17 @@ public class TestJobsDAOImpl implements JobDAO {
         return this.history.stream()
                 .filter(h -> h.getTask().getId().equals(taskId))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Mono<Task> save(@NonNull Task task, @NonNull Scheduler schedule) {
+        history.add(Job.queued(task, schedule));
+        return Mono.just(task);
+    }
+
+    @Override
+    public Mono<Task> getTask(String taskId) {
+        return Mono.empty();
     }
 
     @Override
