@@ -1,7 +1,9 @@
-package org.jobs.manager.events;
+package org.jobs.manager.subscription;
 
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.jobs.manager.subscription.events.SubscriptionEvent;
+import org.jobs.manager.subscription.listeners.SourceListener;
 import org.jobs.manager.utils.CloseUtils;
 import reactor.core.publisher.Flux;
 

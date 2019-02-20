@@ -1,16 +1,15 @@
-package org.jobs.manager.db.util;
+package org.jobs.manager.cache.util;
 
 import com.hazelcast.config.*;
 import lombok.extern.slf4j.Slf4j;
+import org.jobs.manager.subscription.Topics;
 
 import java.util.List;
 
 @Slf4j
 public class HazelcastConfig {
 
-    private static final String MERGE_POLICY = "com.hazelcast.map.merge.PutIfAbsentMapMergePolicy";
     private static final String MAP_STORE_FACTORY = "ru.sberbank.fxp.hazelcast.factories.StoreFactory";
-    private static final String ZOOKEEPER_URL_PROPERTY = "zookeeper_url";
     private static final String HAZELCAST_DISCOVERY = "hazelcast.discovery.enabled";
 
 
@@ -27,7 +26,7 @@ public class HazelcastConfig {
         Config config = new Config();
         config.setInstanceName("JOB_MANAGER_CACHE");
 
-        config.addTopicConfig(createTopicConfig("JOB_TOPIC"));
+        config.addTopicConfig(createTopicConfig(Topics.JOB_TOPIC));
 
         config.setNetworkConfig(createNetworkConfig(hosts));
         config.setProperty(HAZELCAST_DISCOVERY, "true");
@@ -47,7 +46,7 @@ public class HazelcastConfig {
                 .setMaxIdleSeconds(0)
                 .setEvictionPolicy(EvictionPolicy.LRU)
                 .setBackupCount(1)
-                .setMergePolicy(MERGE_POLICY)
+                .setMergePolicyConfig(new MergePolicyConfig())
                 .setStatisticsEnabled(true);
         //.setNearCacheConfig(createNearCache(nearCacheName, 100));
     }

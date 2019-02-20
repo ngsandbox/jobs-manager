@@ -3,21 +3,22 @@ package org.jobs.manager.dao;
 import org.jobs.manager.entities.Job;
 import org.jobs.manager.entities.Task;
 import org.jobs.manager.schedulers.Scheduler;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
 
 public interface JobDAO {
 
-    <T extends Task> List<Job<T>> takeJobs(int limit);
+    Flux<Job<Task>> takeJobs(int limit);
 
-    <T extends Task> void updateTaskScheduler(T task, Scheduler startDate);
+    void updateTaskScheduler(Task task, Scheduler startDate);
 
-    List<Job<? extends Task>> getJobHistory(String jobId);
+    Flux<Job<Task>> getJobHistory(String jobId);
 
-    List<Job<? extends Task>> getTaskHistory(String taskId);
+    Flux<Job<Task>> getTaskHistory(String taskId);
 
-    Mono<Task> save(Task task, Scheduler schedule);
+    void save(Task task, Scheduler schedule);
 
     Mono<Task> getTask(String taskId);
 

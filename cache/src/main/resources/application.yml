@@ -2,6 +2,7 @@ org:
   jobs:
     manager:
       paralelizm: 2
+      slots: 2
       cache:
         reconnectIntervalMs: 5000
         hosts:

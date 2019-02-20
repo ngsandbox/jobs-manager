@@ -1,18 +1,19 @@
-package org.jobs.manager.db;
+package org.jobs.manager.cache.services;
 
 import com.hazelcast.core.ITopic;
 import com.hazelcast.core.LifecycleEvent;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.jobs.manager.events.SourceListener;
-import org.jobs.manager.events.SubscriptionEvent;
-import org.jobs.manager.events.SubscriptionService;
+import org.jobs.manager.cache.JobCacheProperties;
+import org.jobs.manager.subscription.listeners.SourceListener;
+import org.jobs.manager.subscription.events.SubscriptionEvent;
+import org.jobs.manager.subscription.SubscriptionService;
 import org.jobs.manager.utils.CloseUtils;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -30,11 +31,10 @@ public class HazelcastMessagingService extends HazelcastService implements Subsc
      */
     private final Set<Subscription> subscriptions = ConcurrentHashMap.newKeySet();
 
-
-    public HazelcastMessagingService(@Value("org.jobs.manager.db.reconnectIntervalMs") long reconnectIntervalMs,
-                                     @Value("org.jobs.manager.db.hosts") List<String> addresses) {
-        super(addresses);
-        this.reconnectIntervalMs = reconnectIntervalMs;
+    @Autowired
+    public HazelcastMessagingService(@NonNull JobCacheProperties cacheProperties) {
+        super(cacheProperties.getHosts());
+        this.reconnectIntervalMs = cacheProperties.getReconnectIntervalMs();
         addLifecycleListener();
     }
 
@@ -76,7 +76,7 @@ public class HazelcastMessagingService extends HazelcastService implements Subsc
 
     @Override
     public void close() {
-        log.info("Close db service");
+        log.info("Close cache service");
         CloseUtils.closeQuite(executorService::shutdown);
         subscriptions.forEach(s -> CloseUtils.closeQuite(s::close));
     }

@@ -1,4 +1,6 @@
-package org.jobs.manager.events;
+package org.jobs.manager.subscription.listeners;
+
+import org.jobs.manager.subscription.events.SubscriptionEvent;
 
 public interface SourceListener<T extends SubscriptionEvent> extends AutoCloseable {
 

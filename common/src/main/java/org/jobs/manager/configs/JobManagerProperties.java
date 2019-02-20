@@ -7,9 +7,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 
-import javax.validation.constraints.NotNull;
-import java.util.List;
-
 @Getter
 @Setter
 @Component
@@ -18,16 +15,15 @@ import java.util.List;
 @Validated
 public class JobManagerProperties {
 
-
     /**
-     * Count of threads to process tasks
+     * Count of threads to run the jobs
      */
     private int paralelizm;
 
     /**
-     * List of tasks' strategies
-     * @see org.jobs.manager.strategies.SendEmailTaskStrategyImpl
+     * Count of available slots to process tasks
+     *
+     * @implNote Accoring to that not all operations could be non-blocking, like RDBMS call, the slots count has to be near the count of the {@link #paralelizm}
      */
-    @NotNull
-    private List<String> strategies;
+    private int slots;
 }

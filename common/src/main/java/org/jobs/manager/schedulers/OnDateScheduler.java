@@ -3,7 +3,6 @@ package org.jobs.manager.schedulers;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.ToString;
-import org.omg.CORBA.PUBLIC_MEMBER;
 
 import java.time.LocalDateTime;
 
@@ -15,11 +14,14 @@ public class OnDateScheduler implements Scheduler {
 
     public static final String ON_DATE_SCHEDULER_CODE = "ON_DATE_SCHEDULER";
 
+    private final String id;
+
     private final LocalDateTime startDate;
 
     private final int priority;
 
-    OnDateScheduler(@NonNull LocalDateTime startDate, int priority) {
+    OnDateScheduler(@NonNull String id, @NonNull LocalDateTime startDate, int priority) {
+        this.id = id;
         this.startDate = startDate;
         this.priority = priority;
     }

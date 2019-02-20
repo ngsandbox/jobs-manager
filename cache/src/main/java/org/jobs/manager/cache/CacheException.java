@@ -1,4 +1,4 @@
-package org.jobs.manager.db;
+package org.jobs.manager.cache;
 
 import org.jobs.manager.JobException;
 

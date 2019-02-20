@@ -1,9 +1,10 @@
-package org.jobs.manager.db;
+package org.jobs.manager.cache.services;
 
 import com.hazelcast.config.Config;
 import com.hazelcast.core.*;
 import lombok.extern.slf4j.Slf4j;
-import org.jobs.manager.db.util.HazelcastConfig;
+import org.jobs.manager.cache.CacheException;
+import org.jobs.manager.cache.util.HazelcastConfig;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -30,6 +31,7 @@ public class HazelcastService {
                     if (config == null) {
                         throw new CacheException("Uninitialized Hazelcast configuration!");
                     }
+
                     instance = localInstance = Hazelcast.newHazelcastInstance(config);
                     log.info("Hazelcast instance created");
                 }

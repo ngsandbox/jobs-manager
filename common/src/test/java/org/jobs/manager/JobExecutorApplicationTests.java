@@ -3,10 +3,10 @@ package org.jobs.manager;
 import lombok.extern.slf4j.Slf4j;
 import org.jobs.manager.entities.Job;
 import org.jobs.manager.entities.TaskStatus;
-import org.jobs.manager.events.JobSubscriptionEvent;
-import org.jobs.manager.events.SubscriptionEvent;
-import org.jobs.manager.events.SubscriptionService;
-import org.jobs.manager.events.Topics;
+import org.jobs.manager.subscription.events.JobSubscriptionEvent;
+import org.jobs.manager.subscription.events.SubscriptionEvent;
+import org.jobs.manager.subscription.SubscriptionService;
+import org.jobs.manager.subscription.Topics;
 import org.jobs.manager.schedulers.OnDateScheduler;
 import org.jobs.manager.schedulers.Schedulers;
 import org.jobs.manager.stubs.TestTaskStrategyImpl;
@@ -21,7 +21,6 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@SuppressWarnings("unchecked")
 @SpringBootTest(classes = {TestConfiguration.class})
 @Slf4j
 public class JobExecutorApplicationTests {
@@ -71,8 +70,8 @@ public class JobExecutorApplicationTests {
         Job<TestTask> job = getTestJob(TIMEOUT_SECS, 0, null, false);
         Thread.sleep((TIMEOUT_SECS + 1) * 1000);
         StepVerifier.create(jobExecutor.run(job))
-                .expectNextMatches(j -> validateJobStatus(j, TaskStatus.RUNNING, "The job does not run. " + j.getError()))
-                .expectNextMatches(j -> validateJobStatus(j, TaskStatus.SUCCESS, "The job does not succeed at the appropriate time. " + j.getError()))
+                .expectNextMatches(j -> validateJobStatus(j, TaskStatus.RUNNING, "The job does not run. " + j.getDescription()))
+                .expectNextMatches(j -> validateJobStatus(j, TaskStatus.SUCCESS, "The job does not succeed at the appropriate time. " + j.getDescription()))
                 .expectComplete()
                 .verify();
     }
@@ -81,7 +80,7 @@ public class JobExecutorApplicationTests {
     void testFailJob() {
         Job<TestTask> job = getTestJob(-1, 0, 0, true);
         StepVerifier.create(jobExecutor.run(job))
-                .expectNextMatches(j -> validateJobStatus(j, TaskStatus.RUNNING, "The job does not run. " + j.getError()))
+                .expectNextMatches(j -> validateJobStatus(j, TaskStatus.RUNNING, "The job does not run. " + j.getDescription()))
                 .expectNextMatches(j -> validateJobStatus(j, TaskStatus.FAILED, "The job did not fail during execution. "))
                 .expectComplete()
                 .verify();
@@ -121,7 +120,8 @@ public class JobExecutorApplicationTests {
                 .timeoutSecs(timeout)
                 .throwError(throwError)
                 .build();
-        OnDateScheduler onDateScheduler = Schedulers.getOnDateScheduler(LocalDateTime.now().plusSeconds(shiftSecs), priority);
+        OnDateScheduler onDateScheduler = Schedulers.getOnDateScheduler(UUID.randomUUID().toString(),
+                LocalDateTime.now().plusSeconds(shiftSecs), priority);
         return Job.queued(task, onDateScheduler);
     }
 }

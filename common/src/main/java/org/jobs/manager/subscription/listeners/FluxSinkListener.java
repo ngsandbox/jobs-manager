@@ -1,8 +1,9 @@
-package org.jobs.manager.events;
+package org.jobs.manager.subscription.listeners;
 
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.jobs.manager.subscription.events.SubscriptionEvent;
 import reactor.core.publisher.FluxSink;
 
 @Slf4j
@@ -12,7 +13,7 @@ public class FluxSinkListener<T extends SubscriptionEvent> implements SourceList
     private final FluxSink<T> emitter;
     private final String sourceName;
 
-    FluxSinkListener(@NonNull String sourceName, @NonNull FluxSink<T> emitter) {
+    public FluxSinkListener(@NonNull String sourceName, @NonNull FluxSink<T> emitter) {
         log.debug("Register flux listener for source {}", sourceName);
         this.sourceName = sourceName;
         this.emitter = emitter;

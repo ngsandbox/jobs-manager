@@ -1,9 +1,9 @@
-package org.jobs.manager.db;
+package org.jobs.manager.cache.services;
 
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.ToString;
-import org.jobs.manager.events.SourceListener;
+import org.jobs.manager.subscription.listeners.SourceListener;
 import org.jobs.manager.utils.CloseUtils;
 
 import java.util.function.Function;

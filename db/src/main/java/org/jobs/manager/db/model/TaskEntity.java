@@ -12,6 +12,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static javax.persistence.CascadeType.PERSIST;
@@ -24,29 +25,42 @@ import static javax.persistence.CascadeType.PERSIST;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
+@Table(name = "task")
+@NamedEntityGraphs({
+        @NamedEntityGraph(name = "TaskEntity.all", attributeNodes = {
+                @NamedAttributeNode("schedule"),
+                @NamedAttributeNode("details")
+        }),
+        @NamedEntityGraph(name = "TaskEntity.details", attributeNodes = @NamedAttributeNode("details"))
+})
 public class TaskEntity implements Serializable {
 
     private static final long serialVersionUID = 4877417877285546885L;
 
     @Id
-    private String id;
+    private String taskId;
 
     private String strategyCode;
 
-    @OneToOne(fetch = FetchType.EAGER, mappedBy = "taskId", cascade = PERSIST)
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "taskId", referencedColumnName = "id")
     private ScheduleEntity schedule;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "taskId", cascade = PERSIST)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "taskId")
     private List<TaskDetailEntity> details;
 
     public static TaskEntity from(@NonNull Task task, @NonNull Scheduler scheduler) {
         TaskEntity document = new TaskEntity();
-        document.id = task.getId();
+        document.taskId = task.getId();
         document.strategyCode = task.getStrategyCode();
-        document.schedule = ScheduleEntity.from(scheduler);
+        document.schedule = ScheduleEntity.from(task.getId(), scheduler);
         document.details = task.getDetails().entrySet()
                 .stream()
-                .map(e -> new TaskDetailEntity(e.getKey(), e.getValue()))
+                .map(e -> TaskDetailEntity.of(
+                        UUID.nameUUIDFromBytes((task.getId() + e.getKey()).getBytes()).toString(), // create unique key from task id and detail's code
+                        task.getId(),
+                        e.getKey(),
+                        e.getValue()))
                 .collect(Collectors.toList());
         return document;
     }
@@ -57,10 +71,10 @@ public class TaskEntity implements Serializable {
                         TaskDetailEntity::getCode,
                         TaskDetailEntity::getValue,
                         (o, o2) -> {
-                            throw new JobException("Collision detected for task " + id + " code " + o);
+                            throw new JobException("Collision detected for task " + taskId + " code " + o);
                         }));
         Task task = Task.builder()
-                .id(id)
+                .id(taskId)
                 .strategyCode(strategyCode)
                 .details(docDetails)
                 .build();

@@ -7,12 +7,17 @@ import java.util.Optional;
 public interface Scheduler extends Serializable {
 
     /**
+     * get Unique identifier
+     */
+    String getId();
+
+    /**
      * Unique code of the scheduler
      */
     String getCode();
 
     /**
-     * The String representation of the schedule
+     * The String representation of the scheduler
      */
     String getExpression();
 
@@ -36,7 +41,7 @@ public interface Scheduler extends Serializable {
     }
 
     /**
-     * Get next schedule info if it support periodical execution
+     * Get next scheduler info if it support periodical execution
      */
     default Optional<Scheduler> next() {
         return Optional.empty();

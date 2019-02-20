@@ -24,6 +24,7 @@ public class CronScheduler implements Scheduler {
     private final LocalDateTime startDate;
     private final String expression;
     private final CronSequenceGenerator generator;
+    private final String id;
     private final int priority;
 
     /**
@@ -38,7 +39,8 @@ public class CronScheduler implements Scheduler {
      * * <li>"0 0 0 25 12 ?" = every Christmas Day at midnight</li>
      * * </ul>
      */
-    CronScheduler(@NonNull String pattern, int priority) {
+    CronScheduler(String id, @NonNull String pattern, int priority) {
+        this.id = id;
         this.expression = pattern;
         this.generator = new CronSequenceGenerator(pattern);
         this.startDate = DateUtils.convertTo(generator.next(new Date()));
@@ -54,7 +56,7 @@ public class CronScheduler implements Scheduler {
     public Optional<Scheduler> next() {
         Date next = generator.next(new Date());
         if (next.after(new Date())) {
-            return Optional.of(new CronScheduler(expression, priority));
+            return Optional.of(new CronScheduler(id, expression, priority));
         }
 
         return Optional.empty();

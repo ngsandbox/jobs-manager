@@ -1,8 +1,9 @@
-package org.jobs.manager.events;
+package org.jobs.manager.subscription.events;
 
 import lombok.Getter;
 import lombok.ToString;
 import org.jobs.manager.entities.Job;
+import org.jobs.manager.subscription.Topics;
 
 import java.io.Serializable;
 

@@ -15,8 +15,8 @@ repositories {
 
 dependencies {
 
-    compile project(":db")
-    compile project(":db")
+    compile project(":cache")
+    compile project(":cache")
 
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-webflux', version: project['spring-cloud.version']
 }

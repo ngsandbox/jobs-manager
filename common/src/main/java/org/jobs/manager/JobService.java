@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.BaseSubscriber;
 
 import javax.validation.constraints.NotNull;
-import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -35,12 +34,9 @@ public class JobService implements AutoCloseable {
     private void setupNewJobs() {
         int slotsCount = jobExecutor.getSlotsCount();
         if (slotsCount > 0) {
-            List<Job<Task>> jobs = jobDAO.takeJobs(slotsCount);
-            log.debug("Send for execution jobs {}", jobs);
-            for (Job<Task> job : jobs) {
-                jobExecutor.run(job)
-                        .subscribe(new JobSubscriber(job, jobDAO));
-            }
+            jobDAO.takeJobs(slotsCount)
+                    .flatMap(jobExecutor::run)
+                    .subscribe(j -> new JobSubscriber(j, jobDAO));
         }
     }
 
@@ -67,7 +63,7 @@ public class JobService implements AutoCloseable {
         @Override
         public void hookOnComplete() {
             log.info("Job completed for id {}", job.getId());
-            job.getSchedule().next()
+            job.getScheduler().next()
                     .ifPresent(scheduler ->
                             jobDAO.updateTaskScheduler(job.getTask(), scheduler));
         }

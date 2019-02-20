@@ -20,33 +20,42 @@ public class Job<T extends Task> {
      */
     private final String id;
 
-
     private final T task;
 
     private final LocalDateTime started;
 
     private final TaskStatus status;
 
-    private final String error;
+    private final String description;
 
-    private Scheduler schedule;
+    private Scheduler scheduler;
 
     private Job(String id,
-                Scheduler schedule,
+                Scheduler scheduler,
                 LocalDateTime started,
                 T task,
                 TaskStatus status,
-                String error) {
+                String description) {
         this.id = id;
-        this.schedule = schedule;
+        this.scheduler = scheduler;
         this.task = task;
         this.started = started;
         this.status = status;
-        this.error = error;
+        this.description = description;
     }
 
-    public static <T extends Task> Job<T> queued(@NonNull T task, @NotNull Scheduler schedule) {
-        return new Job<>(UUID.randomUUID().toString(), schedule, LocalDateTime.now(), task, TaskStatus.QUEUED, null);
+    public static <T extends Task> Job<T> queued(@NonNull T task, @NotNull Scheduler scheduler) {
+        return new Job<>(UUID.randomUUID().toString(), scheduler, LocalDateTime.now(), task, TaskStatus.QUEUED, null);
+    }
+
+    public static <T extends Task> Job<T> toJob(
+            @NonNull String id,
+            @NonNull LocalDateTime started,
+            @NonNull T task,
+            @NonNull Scheduler scheduler,
+            @NonNull TaskStatus status,
+            @NonNull String description) {
+        return new Job<>(id, scheduler, started, task, status, description);
     }
 
     public Job<T> toStatus(@NonNull TaskStatus status) {
@@ -55,6 +64,6 @@ public class Job<T extends Task> {
 
     public Job<T> toStatus(@NonNull TaskStatus status, String description) {
         log.info("Move to the next status {} with description {} for current job id {}", status, description, id);
-        return new Job<>(id, schedule, started, task, status, description);
+        return new Job<>(id, scheduler, started, task, status, description);
     }
 }

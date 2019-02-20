@@ -3,10 +3,7 @@ package org.jobs.manager.db.model;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 import java.io.Serializable;
 
 import static javax.persistence.CascadeType.PERSIST;
@@ -18,25 +15,31 @@ import static javax.persistence.CascadeType.PERSIST;
 @EqualsAndHashCode(of = "code")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
+@Table(name = "detail")
 public class TaskDetailEntity implements Serializable {
 
     private static final long serialVersionUID = -6317218965632546541L;
 
     @Id
-    private String id;
+    private String detailId;
 
+    @Column(name = "taskId", insertable = false, updatable = false)
     private String taskId;
 
     private String code;
 
     private String value;
 
-    @OneToOne(fetch = FetchType.LAZY, mappedBy = "taskId", cascade = PERSIST)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = PERSIST)
     private TaskEntity task;
 
-    public TaskDetailEntity(String code, String value) {
-        this.code = code;
-        this.value = value;
+    static TaskDetailEntity of(String detailId, String taskId, String code, String value) {
+        TaskDetailEntity entity = new TaskDetailEntity();
+        entity.detailId = detailId;
+        entity.taskId = taskId;
+        entity.code = code;
+        entity.value = value;
+        return entity;
     }
 
 

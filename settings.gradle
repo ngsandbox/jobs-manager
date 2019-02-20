@@ -2,6 +2,6 @@ rootProject.name = 'jobs-manager'
 
 include 'shared'
 include 'common'
-include 'cache'
 include 'db'
+include 'cache'
 include 'backend'

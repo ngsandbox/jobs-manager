@@ -1,13 +1,16 @@
 package org.jobs.manager;
 
 import lombok.extern.slf4j.Slf4j;
+import org.jobs.manager.configs.JobManagerProperties;
 import org.jobs.manager.entities.Job;
 import org.jobs.manager.entities.Task;
 import org.jobs.manager.entities.TaskStatus;
-import org.jobs.manager.events.JobSubscriptionEvent;
-import org.jobs.manager.events.SubscriptionService;
+import org.jobs.manager.subscription.events.JobSubscriptionEvent;
+import org.jobs.manager.subscription.SubscriptionService;
 import org.jobs.manager.strategies.TaskStrategy;
 import org.reactivestreams.Publisher;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
@@ -24,6 +27,7 @@ import java.util.stream.Collectors;
 import static org.jobs.manager.utils.CloseUtils.closeQuite;
 
 @Slf4j
+@Component
 public class JobExecutor implements AutoCloseable {
 
     private final SubscriptionService subscriptionService;
@@ -32,12 +36,13 @@ public class JobExecutor implements AutoCloseable {
     private final Scheduler scheduler;
     private final AtomicInteger slotsCount;
 
-    JobExecutor(int threadCount,
+    @Autowired
+    JobExecutor(JobManagerProperties jobManagerProperties,
                 SubscriptionService subscriptionService,
                 List<TaskStrategy<? extends Task>> strategies) {
         this.subscriptionService = subscriptionService;
-        slotsCount = new AtomicInteger(threadCount);
-        executorService = Executors.newFixedThreadPool(threadCount);
+        slotsCount = new AtomicInteger(jobManagerProperties.getSlots());
+        executorService = Executors.newFixedThreadPool(jobManagerProperties.getParalelizm());
         Map<String, ? extends TaskStrategy<? extends Task>> jobStrategyMap = strategies.stream()
                 .collect(Collectors.toMap(
                         TaskStrategy::getCode,
@@ -56,6 +61,7 @@ public class JobExecutor implements AutoCloseable {
         return slotsCount.get();
     }
 
+    @SuppressWarnings("unchecked")
     <T extends Task> Publisher<Job<T>> run(Job<T> job) {
         log.debug("Start job {}", job);
         if (executorService.isShutdown()) {
@@ -68,7 +74,7 @@ public class JobExecutor implements AutoCloseable {
             return justError(job, String.format("Strategy with code %s was not found for job id %s", job.getTask().getStrategyCode(), job.getId()));
         }
 
-        if (!job.getSchedule().isReady()) {
+        if (!job.getScheduler().isReady()) {
             log.warn("Task is not ready to run {}", job.getId());
             return Mono.empty();
         }
@@ -76,7 +82,6 @@ public class JobExecutor implements AutoCloseable {
         return executeTask(job, taskStrategy);
     }
 
-    @SuppressWarnings("unchecked")
     private <T extends Task> Publisher<Job<T>> executeTask(Job<T> job, TaskStrategy<T> taskStrategy) {
         try {
             slotsCount.decrementAndGet(); //decrement available slot
@@ -101,6 +106,7 @@ public class JobExecutor implements AutoCloseable {
     }
 
     private <T extends Task> Mono<Job<T>> justError(Job<T> job, String error) {
+        log.error("Error during job execution {}. {}", error, job);
         Mono<Job<T>> just = Mono.just(job.toStatus(TaskStatus.FAILED, error));
         return just.doOnNext(j -> subscriptionService.publish(new JobSubscriptionEvent(j, true)));
     }

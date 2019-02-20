@@ -1,4 +1,4 @@
-package org.jobs.manager.events;
+package org.jobs.manager.subscription.events;
 
 import java.io.Serializable;
 

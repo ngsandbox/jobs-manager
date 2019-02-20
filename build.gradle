@@ -56,6 +56,7 @@ subprojects {
         annotationProcessor group: 'org.projectlombok', name: 'lombok', version: project['lombok.version']
 
         compile group: 'org.springframework.boot', name: 'spring-boot', version: project['spring-cloud.version']
+        compile group: 'org.springframework.boot', name: 'spring-boot-autoconfigure', version: project['spring-cloud.version']
         compileOnly group: 'org.springframework.boot', name: 'spring-boot-configuration-processor', version: project['spring-cloud.version']
 
         // https://mvnrepository.com/artifact/io.projectreactor/reactor-core
