@@ -1,3 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-org.jobs.manager.CommonConfiguration, \
-org.jobs.manager.TestConfiguration
+org.jobs.manager.common.CommonConfiguration

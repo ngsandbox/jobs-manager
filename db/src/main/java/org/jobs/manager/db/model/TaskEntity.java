@@ -2,9 +2,9 @@ package org.jobs.manager.db.model;
 
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
-import org.jobs.manager.JobException;
+import org.jobs.manager.common.JobException;
 import org.jobs.manager.entities.Task;
-import org.jobs.manager.schedulers.Scheduler;
+import org.jobs.manager.common.schedulers.Scheduler;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
 
@@ -15,8 +15,6 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static javax.persistence.CascadeType.PERSIST;
-
 
 @Slf4j
 @Getter
@@ -25,13 +23,11 @@ import static javax.persistence.CascadeType.PERSIST;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-@Table(name = "task")
+@Table
 @NamedEntityGraphs({
-        @NamedEntityGraph(name = "TaskEntity.full", attributeNodes = {
-                @NamedAttributeNode("schedule"),
-                @NamedAttributeNode("details")
-        }),
-        @NamedEntityGraph(name = "TaskEntity.details", attributeNodes = @NamedAttributeNode("details"))
+        @NamedEntityGraph(name = "TaskEntity.full", attributeNodes = {@NamedAttributeNode("schedule"), @NamedAttributeNode("details")}),
+        @NamedEntityGraph(name = "TaskEntity.details", attributeNodes = @NamedAttributeNode("details")),
+        @NamedEntityGraph(name = "TaskEntity.schedule", attributeNodes = @NamedAttributeNode("schedule"))
 })
 public class TaskEntity implements Serializable {
 
@@ -44,18 +40,22 @@ public class TaskEntity implements Serializable {
     @Column(name = "strategyCode")
     private String strategyCode;
 
-    @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "taskId", referencedColumnName = "taskId")
+    @Column(name = "scheduleId", insertable = false, updatable = false)
+    private String scheduleId;
+
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(name = "scheduleId")
     private ScheduleEntity schedule;
 
-    @OneToMany(fetch = FetchType.EAGER)
-    @JoinColumn(name = "taskId", referencedColumnName = "taskId")
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(name = "taskId")
     private List<TaskDetailEntity> details;
 
     public static TaskEntity from(@NonNull Task task, @NonNull Scheduler scheduler) {
         TaskEntity document = new TaskEntity();
         document.taskId = task.getId();
         document.strategyCode = task.getStrategyCode();
+        document.scheduleId = scheduler.getId();
         document.schedule = ScheduleEntity.from(task.getId(), scheduler);
         document.details = task.getDetails().entrySet()
                 .stream()

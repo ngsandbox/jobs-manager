@@ -5,6 +5,7 @@ org:
   jobs:
     manager:
       paralelizm: 2
-    cache:
-      hosts:
-        - "localhost"
+      slots: 2
+      cache:
+        hosts:
+          - "localhost"

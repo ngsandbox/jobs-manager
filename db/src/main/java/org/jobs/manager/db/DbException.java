@@ -1,6 +1,6 @@
 package org.jobs.manager.db;
 
-import org.jobs.manager.JobException;
+import org.jobs.manager.common.JobException;
 
 public class DbException extends JobException {
     public DbException(String message) {

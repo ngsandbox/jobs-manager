@@ -16,7 +16,15 @@ repositories {
 dependencies {
 
     compile project(":cache")
-    compile project(":cache")
+    compile project(":db")
 
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-webflux', version: project['spring-cloud.version']
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: project['spring-cloud.version']
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: project['spring-cloud.version']
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-thymeleaf', version: project['spring-cloud.version']
+    implementation group: 'org.webjars', name: 'webjars-locator-core'
+    implementation group: 'org.webjars', name: 'sockjs-client', version: '1.0.2'
+    implementation group: 'org.webjars', name: 'stomp-websocket', version: '2.3.3'
+    implementation group: 'org.webjars', name: 'bootstrap', version: '3.3.7'
+    implementation group: 'org.webjars', name: 'jquery', version: '3.1.0'
 }

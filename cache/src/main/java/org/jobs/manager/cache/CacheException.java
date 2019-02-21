@@ -1,6 +1,6 @@
 package org.jobs.manager.cache;
 
-import org.jobs.manager.JobException;
+import org.jobs.manager.common.JobException;
 
 public class CacheException extends JobException {
     public CacheException(String message) {

@@ -14,6 +14,9 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.Optional;
 
 @Slf4j
 public final class JsonHelper {
@@ -46,23 +49,15 @@ public final class JsonHelper {
         }
     }
 
-    public static <T> T fromJson(String json, Class<T> clazz) {
+    public static <T> Optional<T> fromJson(String json, Class<T> clazz) {
+        if (StringUtils.isEmpty(json))
+            return Optional.empty();
         try {
-            return MAPPER.readValue(json, clazz);
+            return Optional.of(MAPPER.readValue(json, clazz));
         } catch (Exception e) {
             String name = clazz != null ? clazz.getSimpleName() : "empty";
             log.error("Error convert to the name {} json {}", name, json, e);
-            throw new RuntimeException("Error convert to the model " + name , e);
+            throw new RuntimeException("Error convert to the model " + name, e);
         }
-    }
-
-    public static <M> ObjectReader getTypeReader(@NonNull Class<M> modelClass) {
-        JavaType javaType = MAPPER.getTypeFactory().constructType(modelClass);
-        return MAPPER.readerFor(javaType);
-    }
-
-    public static <M> ObjectWriter getTypeWriter(@NonNull Class<M> modelClass) {
-        JavaType javaType = MAPPER.getTypeFactory().constructType(modelClass);
-        return MAPPER.writerFor(javaType);
     }
 }

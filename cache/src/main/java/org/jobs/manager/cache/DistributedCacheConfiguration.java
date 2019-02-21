@@ -6,7 +6,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Configuration;
 
 @Slf4j
-@EnableAutoConfiguration
 @EnableConfigurationProperties(JobCacheProperties.class)
 @Configuration
 public class DistributedCacheConfiguration {

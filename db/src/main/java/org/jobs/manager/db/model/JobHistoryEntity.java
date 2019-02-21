@@ -3,10 +3,10 @@ package org.jobs.manager.db.model;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.GenericGenerator;
-import org.jobs.manager.entities.Job;
+import org.jobs.manager.common.entities.Job;
 import org.jobs.manager.entities.Task;
-import org.jobs.manager.entities.TaskStatus;
-import org.jobs.manager.schedulers.Scheduler;
+import org.jobs.manager.common.entities.TaskStatus;
+import org.jobs.manager.common.schedulers.Scheduler;
 import reactor.util.function.Tuple2;
 
 import javax.persistence.*;
@@ -23,7 +23,14 @@ import java.util.Objects;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @NamedEntityGraph(name = "JobHistoryEntity.task", attributeNodes = @NamedAttributeNode("task"))
-@Table(name = "history")
+@Table
+@NamedEntityGraphs({
+        @NamedEntityGraph(name = "JobHistoryEntity.full", attributeNodes = {
+                @NamedAttributeNode(value = "task", subgraph = "task"),
+        }, subgraphs = {
+                @NamedSubgraph(name = "task", attributeNodes = {@NamedAttributeNode("schedule"), @NamedAttributeNode("details")})
+        })
+})
 public class JobHistoryEntity implements Serializable {
 
     private static final long serialVersionUID = -9124289507532315747L;
@@ -40,11 +47,8 @@ public class JobHistoryEntity implements Serializable {
     @Column(name = "jobId")
     private String jobId;
 
-    @Column(name = "taskId")
+    @Column(name = "taskId", insertable = false, updatable = false)
     private String taskId;
-
-    @Column(name = "scheduleId")
-    private String scheduleId;
 
     @Column(name = "status")
     private TaskStatus status;
@@ -55,7 +59,7 @@ public class JobHistoryEntity implements Serializable {
     @Column(name = "description")
     private String description;
 
-    @OneToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "taskId")
     private TaskEntity task;
 
@@ -68,11 +72,12 @@ public class JobHistoryEntity implements Serializable {
     public static JobHistoryEntity from(@NonNull Job<Task> job) {
         log.trace("Transform job to entity. {}", job);
         JobHistoryEntity entity = new JobHistoryEntity();
-        entity.setJobId(job.getId());
-        entity.setTaskId(job.getTask().getId());
-        entity.setScheduleId(job.getScheduler().getId());
-        entity.setStatus(TaskStatus.QUEUED);
-        entity.setStarted(job.getStarted());
+        entity.jobId = job.getId();
+        entity.taskId = job.getTask().getId();
+        entity.task = TaskEntity.from(job.getTask(), job.getScheduler());
+        entity.status = job.getStatus();
+        entity.started = job.getStarted();
+        entity.description = job.getDescription();
         return entity;
     }
 

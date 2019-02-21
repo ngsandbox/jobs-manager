@@ -9,7 +9,7 @@ import java.util.List;
 
 @Getter
 @Setter
-@Component
+//@Component
 @ConfigurationProperties(prefix = "org.jobs.manager.cache")
 public class JobCacheProperties {
 

@@ -3,8 +3,8 @@ package org.jobs.manager.cache.services;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.ToString;
-import org.jobs.manager.subscription.listeners.SourceListener;
-import org.jobs.manager.utils.CloseUtils;
+import org.jobs.manager.common.subscription.listeners.SourceListener;
+import org.jobs.manager.common.utils.CloseUtils;
 
 import java.util.function.Function;
 

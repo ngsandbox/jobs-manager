@@ -1,2 +1,8 @@
 server:
   port: 8080
+
+org:
+  jobs:
+    manager:
+      paralelizm: 2
+      slots: 2

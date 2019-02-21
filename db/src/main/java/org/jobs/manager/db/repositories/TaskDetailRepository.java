@@ -1,6 +1,5 @@
 package org.jobs.manager.db.repositories;
 
-import org.jobs.manager.db.model.JobHistoryEntity;
 import org.jobs.manager.db.model.TaskDetailEntity;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;

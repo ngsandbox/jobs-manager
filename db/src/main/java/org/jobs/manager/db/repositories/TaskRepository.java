@@ -26,11 +26,10 @@ public interface TaskRepository extends CrudRepository<TaskEntity, String>,
 
     @Query("select t from TaskEntity t where "
             + " (t.taskId = :taskId) ")
-    @EntityGraph(value = "TaskEntity.all", type = FETCH)
+    @EntityGraph(value = "TaskEntity.full", type = FETCH)
     Optional<TaskEntity> findByTaskId(@Param("taskId") String  taskId);
 
     @Query("from TaskEntity t " +
-            //" inner join fetch t.schedule as s " +
             " where (t.schedule.active = true and t.schedule.startDate <= :date) " +
             " order by t.schedule.priority desc ")
     @EntityGraph(value = "TaskEntity.full", type = FETCH)

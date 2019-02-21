@@ -2,7 +2,7 @@ package org.jobs.manager.cache.util;
 
 import com.hazelcast.config.*;
 import lombok.extern.slf4j.Slf4j;
-import org.jobs.manager.subscription.Topics;
+import org.jobs.manager.common.subscription.Topics;
 
 import java.util.List;
 

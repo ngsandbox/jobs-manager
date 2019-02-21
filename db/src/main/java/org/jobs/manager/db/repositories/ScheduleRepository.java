@@ -17,11 +17,6 @@ public interface ScheduleRepository extends CrudRepository<ScheduleEntity, Strin
         JpaSpecificationExecutor<ScheduleRepository> {
 
 
-    @Query("select s from ScheduleEntity s where "
-            + " s.task.taskId = :taskId ")
+    @Query("from ScheduleEntity s where s.taskId = :taskId ")
     List<ScheduleEntity> findByTaskId(@Param("taskId") String taskId);
-
-
-//    @Query("from ScheduleEntity as s where s.active = true and s.startDate <= :date")
-//    List<ScheduleEntity> findActiveTasks(@Param("date") LocalDateTime date, Pageable pageable);
 }
