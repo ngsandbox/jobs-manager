@@ -22,7 +22,6 @@ import java.util.Optional;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-@Table
 public class ScheduleEntity implements Serializable {
 
     private static final long serialVersionUID = 3885492122269688915L;

@@ -1,4 +1,4 @@
-package org.jobs.manager.common;
+package org.jobs.manager.common.stubs;
 
 import lombok.*;
 import org.jobs.manager.entities.Task;

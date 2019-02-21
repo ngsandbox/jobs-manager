@@ -2,19 +2,16 @@ package org.jobs.manager.common.stubs;
 
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.jobs.manager.common.TestTask;
 import org.jobs.manager.common.dao.JobDAO;
 import org.jobs.manager.common.entities.Job;
 import org.jobs.manager.entities.Task;
 import org.jobs.manager.common.schedulers.Scheduler;
-import org.jobs.manager.common.schedulers.Schedulers;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -24,20 +21,10 @@ public class TestJobsDAOImpl implements JobDAO {
 
     private final List<Job<Task>> history = new CopyOnWriteArrayList<>();
 
-    private final Job<Task> cronTestTask = getCronTestJob("*/2 * * * * *", 0, null, false);
+    private final Job<Task> cronTestTask = Tasks.getCronTestJob("*/2 * * * * *", 0, null, false);
 
     private final Set<String> busyTasks = ConcurrentHashMap.newKeySet();
 
-    private Job<Task> getCronTestJob(String pattern, int priority, Integer timeout, boolean throwError) {
-        TestTask task = TestTask.testBuilder()
-                .id(UUID.randomUUID().toString())
-                .strategyCode(TestTaskStrategyImpl.TEST_STRATEGY_CODE)
-                .timeoutSecs(timeout)
-                .throwError(throwError)
-                .build();
-
-        return Job.queued(task, Schedulers.getCronScheduler(UUID.randomUUID().toString(), pattern, priority, true));
-    }
 
     @Override
     public Flux<Job<Task>> takeJobs(int limit) {
@@ -80,6 +67,11 @@ public class TestJobsDAOImpl implements JobDAO {
     @Override
     public Mono<Task> getTask(String taskId) {
         return Mono.empty();
+    }
+
+    @Override
+    public Flux<Task> getTasks() {
+        return Flux.just(cronTestTask.getTask());
     }
 
     @Override

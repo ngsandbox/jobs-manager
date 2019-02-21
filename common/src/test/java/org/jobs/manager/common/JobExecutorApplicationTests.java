@@ -3,9 +3,9 @@ package org.jobs.manager.common;
 import lombok.extern.slf4j.Slf4j;
 import org.jobs.manager.common.entities.Job;
 import org.jobs.manager.common.entities.TaskStatus;
-import org.jobs.manager.common.schedulers.OnDateScheduler;
-import org.jobs.manager.common.schedulers.Schedulers;
-import org.jobs.manager.common.stubs.TestTaskStrategyImpl;
+import org.jobs.manager.common.services.JobExecutor;
+import org.jobs.manager.common.services.JobService;
+import org.jobs.manager.common.stubs.TestTask;
 import org.jobs.manager.common.subscription.SubscriptionService;
 import org.jobs.manager.common.subscription.Topics;
 import org.jobs.manager.common.subscription.events.JobSubscriptionEvent;
@@ -18,8 +18,8 @@ import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
 import java.time.Duration;
-import java.time.LocalDateTime;
-import java.util.UUID;
+
+import static org.jobs.manager.common.stubs.Tasks.getTestJob;
 
 @SpringBootTest(classes = {TestConfiguration.class})
 @Slf4j
@@ -46,7 +46,7 @@ public class JobExecutorApplicationTests {
     /**
      * Start cron job for every 2 seconds {@see #}
      *
-     * @see org.jobs.manager.stubs.TestJobsDAOImpl#cronTestTask
+     * @see org.jobs.manager.common.stubs.TestJobsDAOImpl#cronTestTask
      */
     @Test
     void testCronJob() {
@@ -113,16 +113,5 @@ public class JobExecutorApplicationTests {
         return true;
     }
 
-    private Job<TestTask> getTestJob(int shiftSecs, int priority, Integer timeout, boolean throwError) {
-        TestTask task = TestTask.testBuilder()
-                .id(UUID.randomUUID().toString())
-                .strategyCode(TestTaskStrategyImpl.TEST_STRATEGY_CODE)
-                .timeoutSecs(timeout)
-                .throwError(throwError)
-                .build();
-        OnDateScheduler onDateScheduler = Schedulers.getOnDateScheduler(UUID.randomUUID().toString(),
-                LocalDateTime.now().plusSeconds(shiftSecs), priority, true);
-        return Job.queued(task, onDateScheduler);
-    }
 }
 

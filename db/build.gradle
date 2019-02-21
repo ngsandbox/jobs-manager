@@ -1,7 +1,4 @@
 dependencies {
-//    implementation "org.springframework.data:spring-data-mongodb:2.2.0.M1"
-//    implementation "org.springframework.boot:spring-boot-starter-data-mongodb-reactive:${project['spring-cloud.version']}"
-//    implementation "de.flapdoodle.embed:de.flapdoodle.embed.mongo:${project['mongo.version']}"
 
     compile project(":common")
 
@@ -9,6 +6,9 @@ dependencies {
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc', version: project['spring-cloud.version']
 
     implementation group: 'com.h2database', name: 'h2', version: project['h2.version']
-    
-    testCompile project(":common")
+
+    // First dependency is for IDEA
+    testCompileOnly files { project(':common').sourceSets.test.java.srcDirs }
+// Second is for Gradle
+    testCompile project(':common').sourceSets.test.output
 }

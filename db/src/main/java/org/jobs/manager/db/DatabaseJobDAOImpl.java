@@ -16,9 +16,9 @@ import org.jobs.manager.entities.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.util.function.Tuple2;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
@@ -103,6 +103,13 @@ public class DatabaseJobDAOImpl implements JobDAO {
         Optional<TaskEntity> taskEntity = taskRepository.findByTaskId(taskId);
         return Mono.justOrEmpty(taskEntity)
                 .map(d -> d.toTask().getT1());
+    }
+
+    @Override
+    public Flux<Task> getTasks() {
+        return Flux.fromIterable(taskRepository.findAll())
+                .map(TaskEntity::toTask)
+                .map(Tuple2::getT1);
     }
 
     @Override

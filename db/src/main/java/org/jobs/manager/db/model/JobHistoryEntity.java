@@ -23,7 +23,6 @@ import java.util.Objects;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @NamedEntityGraph(name = "JobHistoryEntity.task", attributeNodes = @NamedAttributeNode("task"))
-@Table
 @NamedEntityGraphs({
         @NamedEntityGraph(name = "JobHistoryEntity.full", attributeNodes = {
                 @NamedAttributeNode(value = "task", subgraph = "task"),

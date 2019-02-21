@@ -23,7 +23,6 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-@Table
 @NamedEntityGraphs({
         @NamedEntityGraph(name = "TaskEntity.full", attributeNodes = {@NamedAttributeNode("schedule"), @NamedAttributeNode("details")}),
         @NamedEntityGraph(name = "TaskEntity.details", attributeNodes = @NamedAttributeNode("details")),

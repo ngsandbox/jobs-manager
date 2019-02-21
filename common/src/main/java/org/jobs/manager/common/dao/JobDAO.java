@@ -20,5 +20,7 @@ public interface JobDAO {
 
     Mono<Task> getTask(String taskId);
 
+    Flux<Task> getTasks();
+
     void save(Job<Task> job);
 }

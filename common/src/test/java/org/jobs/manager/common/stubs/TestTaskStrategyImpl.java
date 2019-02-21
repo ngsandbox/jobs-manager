@@ -3,7 +3,6 @@ package org.jobs.manager.common.stubs;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.jobs.manager.common.JobException;
-import org.jobs.manager.common.TestTask;
 import org.jobs.manager.strategies.TaskStrategy;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;

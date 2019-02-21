@@ -16,7 +16,6 @@ import java.io.Serializable;
 @EqualsAndHashCode(of = "code")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-@Table
 public class TaskDetailEntity implements Serializable {
 
     private static final long serialVersionUID = -6317218965632546541L;

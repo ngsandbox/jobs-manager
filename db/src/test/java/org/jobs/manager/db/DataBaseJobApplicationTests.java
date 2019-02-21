@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.jobs.manager.common.dao.JobDAO;
 import org.jobs.manager.common.entities.EmailTask;
 import org.jobs.manager.common.entities.Job;
+import org.jobs.manager.common.stubs.Tasks;
 import org.jobs.manager.entities.Task;
 import org.jobs.manager.common.entities.TaskStatus;
 import org.jobs.manager.common.schedulers.OnDateScheduler;
@@ -37,9 +38,9 @@ class DataBaseJobApplicationTests {
 
     @BeforeAll
     static void uploadData() {
-        Tuple2<EmailTask, OnDateScheduler> emailSchedule = getTestTash();
-        emailTask = emailSchedule.getT1();
-        scheduler = emailSchedule.getT2();
+        Tuple2<EmailTask, OnDateScheduler> emailTestTask = Tasks.getEmailTestTask();
+        emailTask = emailTestTask.getT1();
+        scheduler = emailTestTask.getT2();
     }
 
     @Test
@@ -67,7 +68,7 @@ class DataBaseJobApplicationTests {
                 .verifyComplete();
     }
 
-    private static Tuple2<EmailTask, OnDateScheduler> getTestTash() {
+    private static Tuple2<EmailTask, OnDateScheduler> getTestTask() {
         OnDateScheduler scheduler = Schedulers.getOnDateScheduler(UUID.randomUUID().toString(), LocalDateTime.now().minusSeconds(2), 0, true);
         EmailTask task = EmailTask.testBuilder()
                 .id(UUID.randomUUID().toString())

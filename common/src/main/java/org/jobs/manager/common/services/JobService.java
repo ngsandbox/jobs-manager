@@ -1,4 +1,4 @@
-package org.jobs.manager.common;
+package org.jobs.manager.common.services;
 
 import lombok.extern.slf4j.Slf4j;
 import org.jobs.manager.common.dao.JobDAO;
@@ -38,7 +38,7 @@ public class JobService implements AutoCloseable {
     private void setupNewJobs() {
         int slotsCount = jobExecutor.getSlotsCount();
         if (slotsCount > 0) {
-            log.debug("Take available tasks {} and subscribe for updates", slotsCount);
+            log.trace("Take available tasks {} and subscribe for updates", slotsCount);
             jobDAO.takeJobs(slotsCount)
                     .log()
                     .flatMap(jobExecutor::run)

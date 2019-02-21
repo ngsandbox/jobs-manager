@@ -1,4 +1,4 @@
-package org.jobs.manager.common;
+package org.jobs.manager.common.services;
 
 import lombok.extern.slf4j.Slf4j;
 import org.jobs.manager.common.configs.JobManagerProperties;
@@ -62,7 +62,7 @@ public class JobExecutor implements AutoCloseable {
     }
 
     @SuppressWarnings("unchecked")
-    <T extends Task> Publisher<Job<T>> run(Job<T> job) {
+    public <T extends Task> Publisher<Job<T>> run(Job<T> job) {
         log.debug("Start job {}", job);
         if (executorService.isShutdown()) {
             log.error("The job service is already closed for running job {}", job);
