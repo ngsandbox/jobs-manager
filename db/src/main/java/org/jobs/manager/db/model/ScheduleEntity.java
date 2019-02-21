@@ -29,23 +29,29 @@ public class ScheduleEntity implements Serializable {
     @Id
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "uuid")
+    @Column(name = "scheduleId")
     private String scheduleId;
 
-//    @Column(name="taskId", insertable = false, updatable = false)
-//    private String taskId;
+    @Column(name = "taskId")
+    private String taskId;
 
+    @Column(name = "code")
     private String code;
 
+    @Column(name = "expression")
     private String expression;
 
+    @Column(name = "startDate")
     private LocalDateTime startDate;
 
+    @Column(name = "priority")
     private int priority;
 
+    @Column(name = "active")
     private boolean active;
 
-    @OneToOne(fetch = FetchType.LAZY, mappedBy = "schedule")
-    private TaskEntity task;
+//    @OneToOne(fetch = FetchType.LAZY, mappedBy = "schedule")
+//    private TaskEntity task;
 
     static ScheduleEntity from(@NonNull String taskId, @NonNull Scheduler scheduler) {
         ScheduleEntity entity = new ScheduleEntity();
@@ -53,7 +59,7 @@ public class ScheduleEntity implements Serializable {
             entity.setScheduleId(scheduler.getId());
         }
 
-//        entity.setTaskId(taskId);
+        entity.setTaskId(taskId);
         entity.setCode(scheduler.getCode());
         entity.setExpression(scheduler.getExpression());
         entity.setPriority(scheduler.getPriority());

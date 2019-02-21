@@ -22,6 +22,6 @@ public interface ScheduleRepository extends CrudRepository<ScheduleEntity, Strin
     List<ScheduleEntity> findByTaskId(@Param("taskId") String taskId);
 
 
-    @Query("from ScheduleEntity as s where s.active = true and s.startDate <= :date")
-    List<ScheduleEntity> findActiveTasks(@Param("date") LocalDateTime date, Pageable pageable);
+//    @Query("from ScheduleEntity as s where s.active = true and s.startDate <= :date")
+//    List<ScheduleEntity> findActiveTasks(@Param("date") LocalDateTime date, Pageable pageable);
 }

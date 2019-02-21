@@ -27,7 +27,7 @@ import static javax.persistence.CascadeType.PERSIST;
 @Entity
 @Table(name = "task")
 @NamedEntityGraphs({
-        @NamedEntityGraph(name = "TaskEntity.all", attributeNodes = {
+        @NamedEntityGraph(name = "TaskEntity.full", attributeNodes = {
                 @NamedAttributeNode("schedule"),
                 @NamedAttributeNode("details")
         }),
@@ -38,15 +38,18 @@ public class TaskEntity implements Serializable {
     private static final long serialVersionUID = 4877417877285546885L;
 
     @Id
+    @Column(name = "taskId")
     private String taskId;
 
+    @Column(name = "strategyCode")
     private String strategyCode;
 
     @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "taskId", referencedColumnName = "id")
+    @JoinColumn(name = "taskId", referencedColumnName = "taskId")
     private ScheduleEntity schedule;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "taskId")
+    @OneToMany(fetch = FetchType.EAGER)
+    @JoinColumn(name = "taskId", referencedColumnName = "taskId")
     private List<TaskDetailEntity> details;
 
     public static TaskEntity from(@NonNull Task task, @NonNull Scheduler scheduler) {

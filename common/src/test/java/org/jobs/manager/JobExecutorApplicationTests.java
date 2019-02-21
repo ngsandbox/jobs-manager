@@ -56,10 +56,10 @@ public class JobExecutorApplicationTests {
                         validateJobStatus(((JobSubscriptionEvent) subscriptionEvent).getJob(), TaskStatus.RUNNING, "Job is not runned"))
                 .expectNextMatches(subscriptionEvent -> subscriptionEvent instanceof JobSubscriptionEvent &&
                         validateJobStatus(((JobSubscriptionEvent) subscriptionEvent).getJob(), TaskStatus.SUCCESS, "Job does not succeed"))
-                .expectNextMatches(subscriptionEvent -> subscriptionEvent instanceof JobSubscriptionEvent &&
-                        validateJobStatus(((JobSubscriptionEvent) subscriptionEvent).getJob(), TaskStatus.RUNNING, "Job is not runned"))
-                .expectNextMatches(subscriptionEvent -> subscriptionEvent instanceof JobSubscriptionEvent &&
-                        validateJobStatus(((JobSubscriptionEvent) subscriptionEvent).getJob(), TaskStatus.SUCCESS, "Job does not succeed"))
+//                .expectNextMatches(subscriptionEvent -> subscriptionEvent instanceof JobSubscriptionEvent &&
+//                        validateJobStatus(((JobSubscriptionEvent) subscriptionEvent).getJob(), TaskStatus.RUNNING, "Job is not runned"))
+//                .expectNextMatches(subscriptionEvent -> subscriptionEvent instanceof JobSubscriptionEvent &&
+//                        validateJobStatus(((JobSubscriptionEvent) subscriptionEvent).getJob(), TaskStatus.SUCCESS, "Job does not succeed"))
                 .thenCancel()
                 .verify(Duration.ofMillis(4500));
     }

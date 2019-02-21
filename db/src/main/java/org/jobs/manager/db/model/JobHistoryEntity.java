@@ -34,23 +34,29 @@ public class JobHistoryEntity implements Serializable {
     @Id
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "uuid")
+    @Column(name = "historyId")
     private String historyId;
 
+    @Column(name = "jobId")
     private String jobId;
 
-//    @Column(name="taskId", insertable = false, updatable = false)
-//    private String taskId;
+    @Column(name = "taskId")
+    private String taskId;
 
+    @Column(name = "scheduleId")
     private String scheduleId;
 
+    @Column(name = "status")
     private TaskStatus status;
 
+    @Column(name = "started")
     private LocalDateTime started;
 
+    @Column(name = "description")
     private String description;
 
-    @ManyToOne
-//    @JoinColumn(name = "taskId")
+    @OneToOne
+    @JoinColumn(name = "taskId")
     private TaskEntity task;
 
     public static Job<Task> queued(@NonNull Task task, @NonNull Scheduler scheduler) {
@@ -63,7 +69,7 @@ public class JobHistoryEntity implements Serializable {
         log.trace("Transform job to entity. {}", job);
         JobHistoryEntity entity = new JobHistoryEntity();
         entity.setJobId(job.getId());
-//        entity.setTaskId(job.getTask().getId());
+        entity.setTaskId(job.getTask().getId());
         entity.setScheduleId(job.getScheduler().getId());
         entity.setStatus(TaskStatus.QUEUED);
         entity.setStarted(job.getStarted());

@@ -4,11 +4,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.jobs.manager.dao.JobDAO;
 import org.jobs.manager.entities.Job;
 import org.jobs.manager.entities.Task;
+import org.jobs.manager.entities.TaskStatus;
+import org.reactivestreams.Subscription;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.BaseSubscriber;
+import reactor.core.publisher.SignalType;
 
 import javax.validation.constraints.NotNull;
+import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -34,7 +38,9 @@ public class JobService implements AutoCloseable {
     private void setupNewJobs() {
         int slotsCount = jobExecutor.getSlotsCount();
         if (slotsCount > 0) {
+            log.debug("Take available tasks {} and subscribe for updates", slotsCount);
             jobDAO.takeJobs(slotsCount)
+                    .log()
                     .flatMap(jobExecutor::run)
                     .subscribe(j -> new JobSubscriber(j, jobDAO));
         }
@@ -50,14 +56,33 @@ public class JobService implements AutoCloseable {
         }
 
         @Override
+        protected void hookFinally(SignalType type) {
+            super.hookFinally(type);
+            log.debug("Received signal {} for the task stratedy {} of jobId {}", type, job.getTask().getStrategyCode(), job.getId());
+        }
+
+        @Override
+        protected void hookOnSubscribe(Subscription subscription) {
+            super.hookOnSubscribe(subscription);
+            log.debug("Subscribed to the task stratedy {} of jobId {}", job.getTask().getStrategyCode(), job.getId());
+        }
+
+        @Override
+        protected void hookOnCancel() {
+            log.debug("Canceled task stratedy {} of jobId {}", job.getTask().getStrategyCode(), job.getId());
+        }
+
+        @Override
         public void hookOnNext(Job<Task> taskJob) {
-            log.debug("Changed status for jobId {}", job.getId());
+            Optional<TaskStatus> taskStatus = Optional.ofNullable(taskJob)
+                    .map(Job::getStatus);
+            log.debug("Changed status {} for task stratedy {} of jobId {}", taskStatus, job.getTask().getStrategyCode(), job.getId());
             jobDAO.save(taskJob);
         }
 
         @Override
         public void hookOnError(Throwable ex) {
-            log.error("Error catched from publisher for jobId {}", job.getId(), ex);
+            log.error("Error catched from task stratedy {} for jobId {}", job.getTask().getStrategyCode(), job.getId(), ex);
         }
 
         @Override

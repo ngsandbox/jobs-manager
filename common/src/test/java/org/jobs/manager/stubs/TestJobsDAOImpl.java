@@ -13,9 +13,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 @Service
@@ -23,8 +21,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class TestJobsDAOImpl implements JobDAO {
 
     private final List<Job<Task>> history = new CopyOnWriteArrayList<>();
-
-    private final Set<String> busyTasks = ConcurrentHashMap.newKeySet();
 
     private final Job<Task> cronTestTask = getCronTestJob("*/2 * * * * *", 0, null, false);
 
@@ -41,19 +37,15 @@ public class TestJobsDAOImpl implements JobDAO {
 
     @Override
     public Flux<Job<Task>> takeJobs(int limit) {
+        log.debug("Take available jobs count {}", limit);
         return Flux.just(cronTestTask)
-                .filter(j -> !busyTasks.contains(j.getTask().getId()))
-                .doOnNext(j -> busyTasks.add(j.getTask().getId()));
-//        Stream<Job<Task>> testJobs = Stream.of(cronTestTask)
-//                .filter(j -> !busyTasks.contains(j.getTask().getId()))
-//                .forEach(j -> busyTasks.add(j.getTask().getId()));
-//        busyTasks.addAll(testJobs.stream().map(j -> j.getTask().getId()).collect(toList()));
-//        return Flux.from(testJobs);
+                .take(limit)
+                .log();
     }
 
     @Override
-    public void updateTaskScheduler(Task task, @NonNull Scheduler scheduler) {
-        busyTasks.remove(task.getId());
+    public void updateTaskScheduler(@NonNull Task task, @NonNull Scheduler scheduler) {
+        log.debug("Release task {} and scheduler {}", task, scheduler);
         if (cronTestTask.getId().equals(task.getId())) {
             cronTestTask.setScheduler(scheduler);
         }

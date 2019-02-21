@@ -21,17 +21,20 @@ public class TaskDetailEntity implements Serializable {
     private static final long serialVersionUID = -6317218965632546541L;
 
     @Id
+    @Column(name = "detailId")
     private String detailId;
 
-    @Column(name = "taskId", insertable = false, updatable = false)
+    @Column(name = "taskId")
     private String taskId;
 
+    @Column(name = "code")
     private String code;
 
+    @Column(name = "value")
     private String value;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = PERSIST)
-    private TaskEntity task;
+//    @ManyToOne(fetch = FetchType.LAZY, cascade = PERSIST)
+//    private TaskEntity task;
 
     static TaskDetailEntity of(String detailId, String taskId, String code, String value) {
         TaskDetailEntity entity = new TaskDetailEntity();

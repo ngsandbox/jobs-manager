@@ -50,11 +50,11 @@ public class DatabaseJobDAOImpl implements JobDAO {
             return Flux.empty();
         }
 
-        return Flux.fromStream(scheduleRepository.findActiveTasks(LocalDateTime.now(), PageRequest.of(0, limit)).stream())
+        return Flux.fromStream(taskRepository.findActiveTasks(LocalDateTime.now(), PageRequest.of(0, limit)).stream())
                 .log()
-                .doOnNext(s -> s.setActive(false))
-                .doOnNext(scheduleRepository::save)
-                .map(ScheduleEntity::getTask)
+                .doOnNext(s -> s.getSchedule().setActive(false))
+                .doOnNext(t -> scheduleRepository.save(t.getSchedule()))
+                //.map(ScheduleEntity::getTask)
                 .map(TaskEntity::toTask)
                 .map(tuple -> JobHistoryEntity.queued(tuple.getT1(), tuple.getT2()))
                 .doOnNext(j -> jobHistoryRepository.save(JobHistoryEntity.from(j)));
@@ -94,6 +94,10 @@ public class DatabaseJobDAOImpl implements JobDAO {
     @Override
     public Mono<Task> getTask(String taskId) {
         log.debug("Find task by id {}", taskId);
+        log.debug("All tasks {}", taskRepository.findAll());
+        log.debug("All task details {}", taskDetailRepository.findAll());
+        log.debug("All task schedule {}", scheduleRepository.findAll());
+        log.debug("All jobs {}", jobHistoryRepository.findAll());
         Optional<TaskEntity> taskEntity = taskRepository.findByTaskId(taskId);
         return Mono.justOrEmpty(taskEntity)
                 .map(d -> d.toTask().getT1());
@@ -102,6 +106,6 @@ public class DatabaseJobDAOImpl implements JobDAO {
     @Override
     public void save(Job<Task> job) {
         log.debug("Save job history {}", job);
-        jobHistoryRepository.save(JobHistoryEntity.from(job));V
+        jobHistoryRepository.save(JobHistoryEntity.from(job));
     }
 }
