@@ -4,11 +4,12 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.jobs.manager.common.dao.JobDAO;
 import org.jobs.manager.common.entities.Job;
-import org.jobs.manager.entities.Task;
+import org.jobs.manager.common.shared.Task;
 import org.jobs.manager.common.schedulers.Scheduler;
-import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.util.function.Tuple2;
+import reactor.util.function.Tuples;
 
 import java.util.List;
 import java.util.Set;
@@ -20,7 +21,7 @@ public class TestJobsDAOImpl implements JobDAO {
 
     private final List<Job<Task>> history = new CopyOnWriteArrayList<>();
 
-    private final Job<Task> cronTestTask = Tasks.getCronTestJob("*/2 * * * * *", 0, null, false);
+    private final Job<Task> cronTestJob = Tasks.getCronTestJob("*/2 * * * * *", 0, null, false);
 
     private final Set<String> busyTasks = ConcurrentHashMap.newKeySet();
 
@@ -28,7 +29,7 @@ public class TestJobsDAOImpl implements JobDAO {
     @Override
     public Flux<Job<Task>> takeJobs(int limit) {
         log.debug("Take available jobs count {}", limit);
-        return Flux.just(cronTestTask)
+        return Flux.just(cronTestJob)
                 .filter(t -> t.getScheduler().isActive())
                 .doOnNext(j -> busyTasks.add(j.getTask().getId()))
                 .take(limit)
@@ -39,8 +40,8 @@ public class TestJobsDAOImpl implements JobDAO {
     public void updateTaskScheduler(@NonNull String taskId, @NonNull Scheduler scheduler) {
         log.debug("Release task {} and scheduler {}", taskId, scheduler);
         busyTasks.remove(taskId);
-        if (cronTestTask.getId().equals(taskId)) {
-            cronTestTask.setScheduler(scheduler);
+        if (cronTestJob.getId().equals(taskId)) {
+            cronTestJob.setScheduler(scheduler);
         }
     }
 
@@ -69,8 +70,17 @@ public class TestJobsDAOImpl implements JobDAO {
     }
 
     @Override
+    public Mono<Tuple2<Task, Scheduler>> getTaskInfo(String taskId) {
+        if (cronTestJob.getTask().getId().equals(taskId)) {
+            return Mono.just(Tuples.of(cronTestJob.getTask(), cronTestJob.getScheduler()));
+        }
+
+        return Mono.empty();
+    }
+
+    @Override
     public Flux<Task> getTasks() {
-        return Flux.just(cronTestTask.getTask());
+        return Flux.just(cronTestJob.getTask());
     }
 
     @Override

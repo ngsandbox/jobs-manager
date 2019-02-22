@@ -5,11 +5,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.jobs.manager.common.dao.JobDAO;
 import org.jobs.manager.common.entities.Job;
 import org.jobs.manager.common.schedulers.Scheduler;
-import org.jobs.manager.entities.Task;
+import org.jobs.manager.common.shared.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.util.function.Tuple2;
 
 import javax.validation.constraints.NotNull;
 
@@ -38,5 +39,9 @@ public class TaskService {
 
     public void deleteTask(@NonNull String taskId) {
         jobDAO.deleteTask(taskId);
+    }
+
+    public Mono<Tuple2<Task, Scheduler>> getTaskInfo(String taskId) {
+        return jobDAO.getTaskInfo(taskId);
     }
 }

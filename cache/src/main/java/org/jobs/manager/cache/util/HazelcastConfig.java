@@ -48,7 +48,6 @@ public class HazelcastConfig {
                 .setBackupCount(1)
                 .setMergePolicyConfig(new MergePolicyConfig())
                 .setStatisticsEnabled(true);
-        //.setNearCacheConfig(createNearCache(nearCacheName, 100));
     }
 
     private MapConfig createPersistedInMemoryMap(String name) {

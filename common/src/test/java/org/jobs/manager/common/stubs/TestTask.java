@@ -1,11 +1,14 @@
 package org.jobs.manager.common.stubs;
 
 import lombok.*;
-import org.jobs.manager.entities.Task;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.jobs.manager.common.shared.Task;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @Getter
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
@@ -20,6 +23,22 @@ public class TestTask extends Task {
     private final Integer timeoutSecs;
 
     private final boolean throwError;
+
+    public static TestTask of(@NonNull Task task) {
+        log.debug("Convert to test task {}", task);
+        String strTimout = task.getDetails().get(TIMEOUT_SECS_CODE);
+        Integer timeout = null;
+        if(StringUtils.isNotEmpty(strTimout)){
+            timeout = Integer.parseInt(strTimout);
+        }
+
+        return TestTask.testBuilder()
+                .id(task.getId())
+                .strategyCode(task.getStrategyCode())
+                .timeoutSecs(timeout)
+                .throwError(Boolean.valueOf(task.getDetails().get(THROW_ERROR_CODE)))
+                .build();
+    }
 
     @Builder(builderMethodName = "testBuilder")
     public TestTask(@NonNull String id,

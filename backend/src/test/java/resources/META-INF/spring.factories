@@ -1,3 +1,0 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-org.jobs.manager.db.DataBaseConfiguration, \
-org.jobs.manager.cache.DistributedCacheConfiguration

@@ -5,27 +5,25 @@ import com.hazelcast.core.LifecycleEvent;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.jobs.manager.cache.JobCacheProperties;
-import org.jobs.manager.common.subscription.listeners.SourceListener;
-import org.jobs.manager.common.subscription.events.SubscriptionEvent;
 import org.jobs.manager.common.subscription.SubscriptionService;
+import org.jobs.manager.common.subscription.events.SubscriptionEvent;
+import org.jobs.manager.common.subscription.listeners.SourceListener;
 import org.jobs.manager.common.utils.CloseUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 
-import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
-
 @Service
 @Slf4j
 public class HazelcastMessagingService extends HazelcastService implements SubscriptionService {
+
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
-    private final long reconnectIntervalMs;
+
     /**
      * List of listeners for the topic name
      */
@@ -34,7 +32,6 @@ public class HazelcastMessagingService extends HazelcastService implements Subsc
     @Autowired
     public HazelcastMessagingService(@NonNull JobCacheProperties cacheProperties) {
         super(cacheProperties.getHosts());
-        this.reconnectIntervalMs = cacheProperties.getReconnectIntervalMs();
         addLifecycleListener();
     }
 
@@ -64,7 +61,7 @@ public class HazelcastMessagingService extends HazelcastService implements Subsc
     @Override
     public <T extends SubscriptionEvent> void publish(T message) {
         ITopic<T> topic = getTopic(message.getSourceName());
-        log.trace("Publish message to the topic {}", topic.getName());
+        log.debug("Publish message to the topic {}", topic.getName());
 
         topic.publish(message);
         log.trace("Successfully publish message to the topic {}", topic.getName());
@@ -83,42 +80,5 @@ public class HazelcastMessagingService extends HazelcastService implements Subsc
 
     private void handleLifecycleEvent(LifecycleEvent event) {
         log.info("Hazelcast lifecycle changed. New state: {}", event.getState());
-        if (event.getState() == LifecycleEvent.LifecycleState.SHUTDOWN) {
-            executorService.execute(this::waitForHazelcast);
-        }
     }
-
-    private void waitForHazelcast() {
-        Thread.currentThread().setName("Hazelcast-re-subscriber");
-        while (!Thread.currentThread().isInterrupted()) {
-            if (!this.isActive()) {
-                sleep();
-            } else {
-                resubscribe();
-                break;
-            }
-        }
-    }
-
-    private void resubscribe() {
-        log.debug("Re-subscription for hazelcast topics started");
-        addLifecycleListener();
-        HashSet<Subscription> set = new HashSet<>(this.subscriptions);
-        for (Subscription subscription : set) {
-            this.subscriptions.remove(subscription);
-            this.subscriptions.add(subscription.resubscribe());
-        }
-    }
-
-    private void sleep() {
-        log.debug("Waiting for hazelcast client to reconnect.");
-        try {
-            MILLISECONDS.sleep(reconnectIntervalMs);
-        } catch (InterruptedException e) {
-            log.warn("Re-subscription task was interrupted ");
-            Thread.currentThread().interrupt();
-        }
-    }
-
-
 }

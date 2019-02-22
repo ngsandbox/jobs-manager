@@ -2,10 +2,10 @@ package org.jobs.manager.common.stubs;
 
 import org.jobs.manager.common.entities.EmailTask;
 import org.jobs.manager.common.entities.Job;
+import org.jobs.manager.common.schedulers.CronScheduler;
 import org.jobs.manager.common.schedulers.OnDateScheduler;
 import org.jobs.manager.common.schedulers.Schedulers;
-import org.jobs.manager.common.strategies.SendEmailTaskStrategyImpl;
-import org.jobs.manager.entities.Task;
+import org.jobs.manager.common.shared.Task;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
 
@@ -23,7 +23,11 @@ public class Tasks {
                 .throwError(throwError)
                 .build();
 
-        return Job.queued(task, Schedulers.getCronScheduler(UUID.randomUUID().toString(), pattern, priority, true));
+        return Job.queued(task, getCronScheduler(pattern, priority));
+    }
+
+    public static CronScheduler getCronScheduler(String pattern, int priority) {
+        return Schedulers.getCronScheduler(UUID.randomUUID().toString(), pattern, priority, true);
     }
 
 
@@ -42,15 +46,19 @@ public class Tasks {
 
     public static Tuple2<EmailTask, OnDateScheduler> getEmailTestTask() {
         OnDateScheduler scheduler = Schedulers.getOnDateScheduler(UUID.randomUUID().toString(), LocalDateTime.now().minusSeconds(2), 0, true);
-        EmailTask task = EmailTask.testBuilder()
-                .id(UUID.randomUUID().toString())
-                .strategyCode(SendEmailTaskStrategyImpl.SEND_EMAIL_STRATEGY_CODE)
-                .subject("Urgent!")
-                .body("Dear mr, ")
-                .recipients(Arrays.asList("test2@mail.de", "test@mail.de"))
-                .from("spam@mail.de")
-                .build();
+        EmailTask task = getEmailTask(TestTaskStrategyImpl.TEST_STRATEGY_CODE);
         return Tuples.of(task, scheduler);
+    }
+
+    public static EmailTask getEmailTask(String strategyCode) {
+        return EmailTask.testBuilder()
+                    .id(UUID.randomUUID().toString())
+                    .strategyCode(strategyCode)
+                    .subject("Urgent!")
+                    .body("Dear mr, ")
+                    .recipients(Arrays.asList("test2@mail.de", "test@mail.de"))
+                    .from("spam@mail.de")
+                    .build();
     }
 
 }

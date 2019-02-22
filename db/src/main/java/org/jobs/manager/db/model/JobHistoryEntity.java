@@ -4,7 +4,7 @@ import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.GenericGenerator;
 import org.jobs.manager.common.entities.Job;
-import org.jobs.manager.entities.Task;
+import org.jobs.manager.common.shared.Task;
 import org.jobs.manager.common.entities.TaskStatus;
 import org.jobs.manager.common.schedulers.Scheduler;
 import reactor.util.function.Tuple2;

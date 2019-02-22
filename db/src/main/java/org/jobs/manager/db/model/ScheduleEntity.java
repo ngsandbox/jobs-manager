@@ -9,7 +9,6 @@ import org.jobs.manager.common.schedulers.Schedulers;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.Table;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -33,8 +32,8 @@ public class ScheduleEntity implements Serializable {
     @Column(name = "taskId", insertable = false, updatable = false)
     private String taskId;
 
-    @Column(name = "code")
-    private String code;
+    @Column(name = "strategyCode")
+    private String strategyCode;
 
     @Column(name = "expression")
     private String expression;
@@ -52,7 +51,7 @@ public class ScheduleEntity implements Serializable {
         ScheduleEntity entity = new ScheduleEntity();
         entity.scheduleId = scheduler.getId();
         entity.taskId = taskId;
-        entity.code = scheduler.getCode();
+        entity.strategyCode = scheduler.getCode();
         entity.expression = scheduler.getExpression();
         entity.startDate = scheduler.getStartDate();
         entity.priority = scheduler.getPriority();
@@ -60,15 +59,16 @@ public class ScheduleEntity implements Serializable {
         return entity;
     }
 
-    public Scheduler toTaskScheduler() {
-        Optional<? extends Scheduler> build = Schedulers.builder()
+    Scheduler toTaskScheduler() {
+        Optional<? extends Scheduler> scheduler = Schedulers.builder()
                 .id(scheduleId)
-                .code(getCode())
-                .expression(getExpression())
-                .priority(getPriority())
+                .strategyCode(strategyCode)
+                .expression(expression)
+                .startDate(startDate)
+                .priority(priority)
                 .active(active)
                 .build();
-        return build
-                .orElseThrow(() -> new JobException("Scheduler not found by code " + getCode()));
+        return scheduler
+                .orElseThrow(() -> new JobException("Scheduler not found by strategyCode " + getStrategyCode()));
     }
 }

@@ -3,11 +3,11 @@ package org.jobs.manager.common.services;
 import lombok.extern.slf4j.Slf4j;
 import org.jobs.manager.common.configs.JobManagerProperties;
 import org.jobs.manager.common.entities.Job;
-import org.jobs.manager.entities.Task;
+import org.jobs.manager.common.shared.Task;
 import org.jobs.manager.common.entities.TaskStatus;
 import org.jobs.manager.common.subscription.events.JobSubscriptionEvent;
 import org.jobs.manager.common.subscription.SubscriptionService;
-import org.jobs.manager.strategies.TaskStrategy;
+import org.jobs.manager.common.shared.TaskStrategy;
 import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -16,6 +16,7 @@ import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -48,7 +49,7 @@ public class JobExecutor implements AutoCloseable {
                         TaskStrategy::getCode,
                         o -> o,
                         (o, o2) -> {
-                            throw new IllegalStateException("Collision detected for strategy code " + o.getCode());
+                            throw new IllegalStateException("Collision detected for strategy strategyCode " + o.getCode());
                         }));
         this.strategies = Collections.unmodifiableMap(jobStrategyMap);
         this.scheduler = Schedulers.fromExecutorService(executorService);
@@ -71,12 +72,12 @@ public class JobExecutor implements AutoCloseable {
 
         final TaskStrategy taskStrategy = strategies.get(job.getTask().getStrategyCode());
         if (taskStrategy == null) {
-            return justError(job, String.format("Strategy with code %s was not found for job id %s", job.getTask().getStrategyCode(), job.getId()));
+            return justError(job, String.format("Strategy with strategyCode %s was not found for job id %s", job.getTask().getStrategyCode(), job.getId()));
         }
 
         if (!job.getScheduler().isReady()) {
-            log.warn("Task is not ready to run {}", job.getId());
-            return Mono.empty();
+            log.warn("Task is not ready to run {}. Now: {}, scheduled: {}", job.getId(), LocalDateTime.now(), job.getScheduler().getStartDate());
+            return Flux.just(job);
         }
 
         return executeTask(job, taskStrategy);
@@ -96,7 +97,8 @@ public class JobExecutor implements AutoCloseable {
                     .doOnNext(tJob -> subscriptionService.publish(new JobSubscriptionEvent(tJob, false)))
                     .doOnComplete(slotsCount::incrementAndGet) // increment back available slots
                     .onErrorResume((ex) -> onFluxError(job, ex));
-            return onErrorFlux.subscribeOn(scheduler);
+            //return onErrorFlux.subscribeOn(scheduler);
+            return onErrorFlux;
         } catch (Exception ex) {
             slotsCount.incrementAndGet(); // increment back available slots
             log.error("Fatal error during the execution for strategy {} and job {}", taskStrategy, job, ex);

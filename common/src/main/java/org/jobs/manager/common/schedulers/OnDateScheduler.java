@@ -3,6 +3,8 @@ package org.jobs.manager.common.schedulers;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.ToString;
+import org.jobs.manager.common.schedulers.Scheduler;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 

@@ -12,6 +12,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableTransactionManagement
 @EntityScan
 @Configuration
-@ComponentScan("org.jobs.manager.db")
+@ComponentScan
 public class DataBaseConfiguration {
 }

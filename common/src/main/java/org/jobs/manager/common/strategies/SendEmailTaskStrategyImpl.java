@@ -3,7 +3,8 @@ package org.jobs.manager.common.strategies;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.jobs.manager.common.entities.EmailTask;
-import org.jobs.manager.strategies.TaskStrategy;
+import org.jobs.manager.common.shared.Task;
+import org.jobs.manager.common.shared.TaskStrategy;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
@@ -25,7 +26,7 @@ public class SendEmailTaskStrategyImpl implements TaskStrategy<EmailTask> {
     }
 
     @Override
-    public Mono<Void> execute(EmailTask task) {
+    public Mono<Void> execute(Task task) {
         return Mono.empty();
     }
 }

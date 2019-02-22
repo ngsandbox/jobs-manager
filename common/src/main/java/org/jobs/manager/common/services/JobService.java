@@ -3,16 +3,12 @@ package org.jobs.manager.common.services;
 import lombok.extern.slf4j.Slf4j;
 import org.jobs.manager.common.dao.JobDAO;
 import org.jobs.manager.common.entities.Job;
-import org.jobs.manager.entities.Task;
 import org.jobs.manager.common.entities.TaskStatus;
-import org.reactivestreams.Subscription;
+import org.jobs.manager.common.shared.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.BaseSubscriber;
-import reactor.core.publisher.SignalType;
 
 import javax.validation.constraints.NotNull;
-import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -42,52 +38,16 @@ public class JobService implements AutoCloseable {
             jobDAO.takeJobs(slotsCount)
                     .log()
                     .flatMap(jobExecutor::run)
-                    .subscribe(j -> new JobSubscriber(j, jobDAO));
+                    .doOnNext(this::doOnNext)
+                    .subscribe();
         }
     }
 
-    private static class JobSubscriber extends BaseSubscriber<Job<Task>> {
-        private final Job<Task> job;
-        private final JobDAO jobDAO;
-
-        private JobSubscriber(Job<Task> job, JobDAO jobDAO) {
-            this.job = job;
-            this.jobDAO = jobDAO;
-        }
-
-        @Override
-        protected void hookFinally(SignalType type) {
-            super.hookFinally(type);
-            log.debug("Received signal {} for the task stratedy {} of jobId {}", type, job.getTask().getStrategyCode(), job.getId());
-        }
-
-        @Override
-        protected void hookOnSubscribe(Subscription subscription) {
-            super.hookOnSubscribe(subscription);
-            log.debug("Subscribed to the task stratedy {} of jobId {}", job.getTask().getStrategyCode(), job.getId());
-        }
-
-        @Override
-        protected void hookOnCancel() {
-            log.debug("Canceled task stratedy {} of jobId {}", job.getTask().getStrategyCode(), job.getId());
-        }
-
-        @Override
-        public void hookOnNext(Job<Task> taskJob) {
-            Optional<TaskStatus> taskStatus = Optional.ofNullable(taskJob)
-                    .map(Job::getStatus);
-            log.debug("Changed status {} for task stratedy {} of jobId {}", taskStatus, job.getTask().getStrategyCode(), job.getId());
-            jobDAO.save(taskJob);
-        }
-
-        @Override
-        public void hookOnError(Throwable ex) {
-            log.error("Error catched from task stratedy {} for jobId {}", job.getTask().getStrategyCode(), job.getId(), ex);
-        }
-
-        @Override
-        public void hookOnComplete() {
-            log.info("Job completed for id {}", job.getId());
+    private void doOnNext(Job<Task> job) {
+        jobDAO.save(job);
+        if (job.getStatus() == TaskStatus.SUCCESS ||
+                job.getStatus() == TaskStatus.QUEUED) {
+            log.info("Job {} finished or sent to queue again. Try rechedule...", job.getId());
             job.getScheduler().next()
                     .ifPresent(scheduler ->
                             jobDAO.updateTaskScheduler(job.getTask().getId(), scheduler));

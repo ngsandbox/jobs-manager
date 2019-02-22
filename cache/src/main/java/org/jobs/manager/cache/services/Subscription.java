@@ -27,10 +27,6 @@ class Subscription implements AutoCloseable {
      */
     private final Function<String, String> subscribeAction;
 
-    Subscription resubscribe() {
-        return new Subscription(sourceListener, subscribeAction.apply(registrationId), subscribeAction);
-    }
-
     Subscription(@NonNull SourceListener sourceListener, Function<String, String> subscribeAction) {
         this(sourceListener, subscribeAction.apply(null), subscribeAction);
     }

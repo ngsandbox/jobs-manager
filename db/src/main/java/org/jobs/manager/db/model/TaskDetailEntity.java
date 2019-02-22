@@ -13,7 +13,7 @@ import java.io.Serializable;
 @Getter
 @Setter
 @ToString
-@EqualsAndHashCode(of = "code")
+@EqualsAndHashCode(of = "strategyCode")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 public class TaskDetailEntity implements Serializable {
@@ -27,7 +27,7 @@ public class TaskDetailEntity implements Serializable {
     @Column(name = "taskId", insertable = false, updatable = false)
     private String taskId;
 
-    @Column(name = "code")
+    @Column(name = "strategyCode")
     private String code;
 
     @Column(name = "value")

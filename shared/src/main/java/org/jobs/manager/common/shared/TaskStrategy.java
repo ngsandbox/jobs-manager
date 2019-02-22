@@ -1,12 +1,11 @@
-package org.jobs.manager.strategies;
+package org.jobs.manager.common.shared;
 
-import org.jobs.manager.entities.Task;
 import reactor.core.publisher.Mono;
 
 public interface TaskStrategy<T extends Task> {
 
     /**
-     * Unique code of the strategy
+     * Unique strategyCode of the strategy
      */
     String getCode();
 
@@ -18,5 +17,5 @@ public interface TaskStrategy<T extends Task> {
     /**
      * return Mono-wrapper with execution of the provided task
      */
-    Mono<Void> execute(T task);
+    Mono<Void> execute(Task task);
 }

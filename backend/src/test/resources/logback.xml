@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
 
-    <property name="LOG.DIR" value="logs"/>
+    <property name="LOG.DIR" value="../logs"/>
     <property name="LOG.HISTORY" value="14"/>
     <property name="LOG.FILE_SIZE" value="100MB"/>
     <property name="LOG.TOTAL_SIZE" value="1GB"/>
@@ -59,12 +59,17 @@
         <appender-ref ref="FILE-AUDIT"/>
     </appender>
 
-    <logger name="org.jobs.manager" level="DEBUG" additivity="false">
+   <logger name="org.springframework" level="INFO" additivity="false">
         <appender-ref ref="FILE-AUDIT-ASYNC"/>
         <appender-ref ref="STDOUT"/>
     </logger>
 
-    <root level="debug">
+    <logger name="org.jobs.manager.backend" level="DEBUG" additivity="false">
+        <appender-ref ref="FILE-AUDIT-ASYNC"/>
+        <appender-ref ref="STDOUT"/>
+    </logger>
+
+    <root level="INFO">
         <appender-ref ref="FILE-ERROR"/>
         <appender-ref ref="STDOUT"/>
     </root>

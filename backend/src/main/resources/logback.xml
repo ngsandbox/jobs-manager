@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
 
-    <property name="LOG.DIR" value="logs"/>
+    <property name="LOG.DIR" value="../logs"/>
     <property name="LOG.HISTORY" value="14"/>
     <property name="LOG.FILE_SIZE" value="100MB"/>
     <property name="LOG.TOTAL_SIZE" value="1GB"/>
@@ -10,8 +10,7 @@
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <withJansi>true</withJansi>
         <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %highlight(%-5level) %gray([%X{sessionId}-%X{key}])
-                %gray([%thread]) %boldYellow(%logger{36}) - %msg%n
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %highlight(%-5level) %gray([%X{sessionId}-%X{key}]) %gray([%thread]) %boldYellow(%logger{36}) - %msg%n
             </pattern>
         </encoder>
     </appender>
@@ -20,8 +19,7 @@
     <appender name="FILE-AUDIT" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${LOG.DIR}/debug.log</file>
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <Pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%X{sessionId}-%X{key}] [%thread]
-                %logger{36} - %msg%n
+            <Pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%X{sessionId}-%X{key}] [%thread] %logger{36} - %msg%n
             </Pattern>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
@@ -40,8 +38,7 @@
     <appender name="FILE-ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${LOG.DIR}/error.log</file>
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <Pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%X{sessionId}-%X{key}] [%thread]
-                %logger{36} - %msg%n] - %msg%n
+            <Pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%X{sessionId}-%X{key}] [%thread] %logger{36} - %msg%n] - %msg%n
             </Pattern>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
@@ -67,7 +64,7 @@
         <appender-ref ref="STDOUT"/>
     </logger>
 
-    <root level="error">
+    <root level="INFO">
         <appender-ref ref="FILE-ERROR"/>
         <appender-ref ref="STDOUT"/>
     </root>

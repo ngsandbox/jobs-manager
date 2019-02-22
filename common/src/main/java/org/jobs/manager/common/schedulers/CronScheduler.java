@@ -5,6 +5,7 @@ import lombok.NonNull;
 import lombok.ToString;
 import org.jobs.manager.common.utils.DateUtils;
 import org.springframework.scheduling.support.CronSequenceGenerator;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -40,6 +41,15 @@ public class CronScheduler implements Scheduler {
      * * <li>"0 0 0 25 12 ?" = every Christmas Day at midnight</li>
      * * </ul>
      */
+    CronScheduler(String id, LocalDateTime startDate, @NonNull String pattern, int priority, boolean active) {
+        this.id = id;
+        this.expression = pattern;
+        this.generator = new CronSequenceGenerator(pattern);
+        this.active = active;
+        this.startDate = startDate;
+        this.priority = priority;
+    }
+
     CronScheduler(String id, @NonNull String pattern, int priority, boolean active) {
         this.id = id;
         this.expression = pattern;

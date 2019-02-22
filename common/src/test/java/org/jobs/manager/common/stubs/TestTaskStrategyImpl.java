@@ -3,7 +3,8 @@ package org.jobs.manager.common.stubs;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.jobs.manager.common.JobException;
-import org.jobs.manager.strategies.TaskStrategy;
+import org.jobs.manager.common.shared.Task;
+import org.jobs.manager.common.shared.TaskStrategy;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
@@ -26,14 +27,15 @@ public class TestTaskStrategyImpl implements TaskStrategy<TestTask> {
     }
 
     @Override
-    public Mono<Void> execute(TestTask task) {
+    public Mono<Void> execute(Task task) {
         log.info("Run test task {}", task);
-        if (task.isThrowError()) {
+        TestTask testTask = TestTask.of(task);
+        if (testTask.isThrowError()) {
             return Mono.error(new JobException("Test exception for task: " + task.getId()));
         }
 
-        if (task.getTimeoutSecs() != null)
-            return Mono.delay(Duration.ofSeconds(task.getTimeoutSecs()))
+        if (testTask.getTimeoutSecs() != null)
+            return Mono.delay(Duration.ofSeconds(testTask.getTimeoutSecs()))
                     .flatMap(aLong -> Mono.empty());
 
         log.info("Finish test job {}", task);

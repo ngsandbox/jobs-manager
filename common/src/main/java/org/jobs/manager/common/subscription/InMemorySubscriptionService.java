@@ -31,7 +31,12 @@ public class InMemorySubscriptionService implements SubscriptionService {
         log.debug("Publish message to the source {}", message.getSourceName());
         listeners.stream()
                 .filter(l -> l.getSourceName().equals(message.getSourceName()))
-                .forEach(l -> l.emit(message));
+                .forEach(l -> emitMessage(message, l));
+    }
+
+    private <T extends SubscriptionEvent> void emitMessage(@NonNull T message, SourceListener<? super SubscriptionEvent> l) {
+        log.debug("Publish message to the source {}", message.getSourceName());
+        l.emit(message);
     }
 
     @Override

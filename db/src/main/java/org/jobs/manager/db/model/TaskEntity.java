@@ -3,7 +3,7 @@ package org.jobs.manager.db.model;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.jobs.manager.common.JobException;
-import org.jobs.manager.entities.Task;
+import org.jobs.manager.common.shared.Task;
 import org.jobs.manager.common.schedulers.Scheduler;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
@@ -59,7 +59,7 @@ public class TaskEntity implements Serializable {
         document.details = task.getDetails().entrySet()
                 .stream()
                 .map(e -> TaskDetailEntity.of(
-                        UUID.nameUUIDFromBytes((task.getId() + e.getKey()).getBytes()).toString(), // create unique key from task id and detail's code
+                        UUID.nameUUIDFromBytes((task.getId() + e.getKey()).getBytes()).toString(), // create unique key from task id and detail's strategyCode
                         task.getId(),
                         e.getKey(),
                         e.getValue()))
@@ -73,7 +73,7 @@ public class TaskEntity implements Serializable {
                         TaskDetailEntity::getCode,
                         TaskDetailEntity::getValue,
                         (o, o2) -> {
-                            throw new JobException("Collision detected for task " + taskId + " code " + o);
+                            throw new JobException("Collision detected for task " + taskId + " strategyCode " + o);
                         }));
         Task task = Task.builder()
                 .id(taskId)

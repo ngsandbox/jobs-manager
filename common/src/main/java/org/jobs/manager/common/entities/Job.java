@@ -3,9 +3,10 @@ package org.jobs.manager.common.entities;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.jobs.manager.common.schedulers.Scheduler;
-import org.jobs.manager.entities.Task;
+import org.jobs.manager.common.shared.Task;
 
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -14,7 +15,7 @@ import java.util.UUID;
 @Setter
 @EqualsAndHashCode(of = "id")
 @ToString
-public class Job<T extends Task> {
+public class Job<T extends Task> implements Serializable {
 
     /**
      * Job identifier

@@ -1,8 +1,8 @@
 package org.jobs.manager.common.entities;
 
 import lombok.*;
-import org.jobs.manager.entities.Task;
-import org.jobs.manager.utils.JsonHelper;
+import org.jobs.manager.common.shared.Task;
+import org.jobs.manager.common.shared.utils.JsonHelper;
 
 import java.io.Serializable;
 import java.util.*;

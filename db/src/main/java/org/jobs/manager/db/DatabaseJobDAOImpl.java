@@ -12,7 +12,7 @@ import org.jobs.manager.db.repositories.JobHistoryRepository;
 import org.jobs.manager.db.repositories.ScheduleRepository;
 import org.jobs.manager.db.repositories.TaskDetailRepository;
 import org.jobs.manager.db.repositories.TaskRepository;
-import org.jobs.manager.entities.Task;
+import org.jobs.manager.common.shared.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
@@ -53,11 +53,12 @@ public class DatabaseJobDAOImpl implements JobDAO {
         }
 
         List<TaskEntity> activeTasks = taskRepository.findActiveTasks(LocalDateTime.now(), PageRequest.of(0, limit));
+        activeTasks.forEach(a ->
+                log.debug("Found active task {} scheduled {} now {}", a.getTaskId(), a.getSchedule().getStartDate(), LocalDateTime.now()));
         return Flux.fromStream(activeTasks.stream())
                 .log()
                 .doOnNext(s -> s.getSchedule().setActive(false))
                 .doOnNext(t -> scheduleRepository.save(t.getSchedule()))
-                //.map(ScheduleEntity::getTask)
                 .map(TaskEntity::toTask)
                 .map(tuple -> JobHistoryEntity.queued(tuple.getT1(), tuple.getT2()))
                 .doOnNext(j -> jobHistoryRepository.save(JobHistoryEntity.from(j)));
@@ -101,6 +102,14 @@ public class DatabaseJobDAOImpl implements JobDAO {
         Optional<TaskEntity> taskEntity = taskRepository.findByTaskId(taskId);
         return Mono.justOrEmpty(taskEntity)
                 .map(d -> d.toTask().getT1());
+    }
+
+    @Override
+    public Mono<Tuple2<Task, Scheduler>> getTaskInfo(String taskId) {
+        log.debug("Find task info by id {}", taskId);
+        Optional<TaskEntity> taskEntity = taskRepository.findByTaskId(taskId);
+        return Mono.justOrEmpty(taskEntity)
+                .map(TaskEntity::toTask);
     }
 
     @Override
