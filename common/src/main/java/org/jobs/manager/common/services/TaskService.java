@@ -23,7 +23,7 @@ public class TaskService {
         this.jobDAO = jobDAO;
     }
 
-    public Flux<Task> getTasks(){
+    public Flux<Task> getTasks() {
         log.debug("Get list of tasks");
         return jobDAO.getTasks();
     }
@@ -34,5 +34,9 @@ public class TaskService {
 
     public void saveTask(@NonNull Task task, Scheduler scheduler) {
         jobDAO.save(task, scheduler);
+    }
+
+    public void deleteTask(@NonNull String taskId) {
+        jobDAO.deleteTask(taskId);
     }
 }

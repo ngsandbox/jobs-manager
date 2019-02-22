@@ -23,4 +23,6 @@ public interface JobDAO {
     Flux<Task> getTasks();
 
     void save(Job<Task> job);
+
+    void deleteTask(String taskId);
 }

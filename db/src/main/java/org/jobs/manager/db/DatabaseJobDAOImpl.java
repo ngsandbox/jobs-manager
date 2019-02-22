@@ -91,8 +91,6 @@ public class DatabaseJobDAOImpl implements JobDAO {
     public void save(@NonNull Task task, @NonNull Scheduler scheduler) {
         log.debug("Save task {} and schedule {}", task.getId(), scheduler.getId());
         TaskEntity taskEntity = TaskEntity.from(task, scheduler);
-//        taskDetailRepository.saveAll(taskEntity.getDetails());
-//        scheduleRepository.save(taskEntity.getSchedule());
         taskRepository.save(taskEntity);
         log.debug("Task saved {}", task.getId());
     }
@@ -118,5 +116,11 @@ public class DatabaseJobDAOImpl implements JobDAO {
         JobHistoryEntity from = JobHistoryEntity.from(job);
         jobHistoryRepository.save(from);
         log.debug("Job saved {}", job.getId());
+    }
+
+    @Override
+    public void deleteTask(String taskId) {
+        log.debug("Delete task {}", taskId);
+        taskRepository.deleteById(taskId);
     }
 }

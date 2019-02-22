@@ -9,6 +9,6 @@ dependencies {
 
     // First dependency is for IDEA
     testCompileOnly files { project(':common').sourceSets.test.java.srcDirs }
-// Second is for Gradle
+    // Second is for Gradle
     testCompile project(':common').sourceSets.test.output
 }

@@ -10,4 +10,5 @@ import org.springframework.context.annotation.Configuration;
 @EnableAutoConfiguration
 @ComponentScan("org.jobs.manager.backend")
 public class TestBackendConfiguration {
+
 }

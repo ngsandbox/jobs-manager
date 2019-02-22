@@ -15,7 +15,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-@Service
 @Slf4j
 public class TestJobsDAOImpl implements JobDAO {
 
@@ -77,5 +76,11 @@ public class TestJobsDAOImpl implements JobDAO {
     @Override
     public void save(Job<Task> job) {
         history.add(job);
+    }
+
+    @Override
+    public void deleteTask(String taskId) {
+        log.warn("Not implemented");
+        throw new RuntimeException("Not implemented");
     }
 }

@@ -1,5 +1,6 @@
 package org.jobs.manager.entities;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
@@ -27,6 +28,7 @@ public class Task implements Serializable {
 
     private final Map<String, String> details;
 
+    @JsonCreator
     @Builder
     public Task(@NonNull String id,
                 @NonNull String strategyCode,

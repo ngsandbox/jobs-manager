@@ -27,4 +27,10 @@ dependencies {
     implementation group: 'org.webjars', name: 'stomp-websocket', version: '2.3.3'
     implementation group: 'org.webjars', name: 'bootstrap', version: '3.3.7'
     implementation group: 'org.webjars', name: 'jquery', version: '3.1.0'
+
+    // First dependency is for IDEA
+    testCompileOnly files { project(':common').sourceSets.test.java.srcDirs }
+    // Second is for Gradle
+    testCompile project(':common').sourceSets.test.output
+
 }

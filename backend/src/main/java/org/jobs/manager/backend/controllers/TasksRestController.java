@@ -1,17 +1,18 @@
 package org.jobs.manager.backend.controllers;
 
 import lombok.extern.slf4j.Slf4j;
+import org.jobs.manager.backend.entities.TaskInfo;
 import org.jobs.manager.common.entities.Job;
-import org.jobs.manager.common.schedulers.Scheduler;
 import org.jobs.manager.common.services.TaskService;
 import org.jobs.manager.entities.Task;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 
 @Slf4j
 @RestController
-@RequestMapping("/v1/")
+@RequestMapping(value = "/v1/")
 public class TasksRestController {
 
     private final TaskService taskService;
@@ -27,16 +28,16 @@ public class TasksRestController {
         return taskService.getTasks();
     }
 
-    @PostMapping("/tasks")
-    public void createTask(@RequestParam Task task, @RequestParam Scheduler scheduler) {
-        log.debug("Save task info {} and scheduler {}", task, scheduler);
-        taskService.saveTask(task, scheduler);
+    @PostMapping(path = "/tasks", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public void createTask(@RequestBody TaskInfo taskInfo) {
+        log.trace("Save info {}", taskInfo);
+        taskService.saveTask(taskInfo.getTask(), taskInfo.getScheduler());
     }
 
     @DeleteMapping("/tasks/{taskId}")
-    public void updateTask(@PathVariable String taskId, @RequestParam Task task, @RequestParam Scheduler scheduler) {
+    public void deleteTask(@PathVariable String taskId) {
         log.debug("Update task {}", taskId);
-        taskService.saveTask(task, scheduler);
+        taskService.deleteTask(taskId);
     }
 
     @GetMapping("/tasks/{taskId}")
