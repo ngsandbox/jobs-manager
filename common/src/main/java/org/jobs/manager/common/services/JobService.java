@@ -36,7 +36,6 @@ public class JobService implements AutoCloseable {
         if (slotsCount > 0) {
             log.trace("Take available tasks {} and subscribe for updates", slotsCount);
             jobDAO.takeJobs(slotsCount)
-                    .log()
                     .flatMap(jobExecutor::run)
                     .doOnNext(this::doOnNext)
                     .subscribe();

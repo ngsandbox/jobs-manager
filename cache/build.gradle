@@ -1,4 +1,0 @@
-dependencies {
-    compile project(":common")
-    compile group: 'com.hazelcast', name: 'hazelcast-all', version: project['hazelcast.version']
-}

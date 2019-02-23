@@ -56,7 +56,6 @@ public class DatabaseJobDAOImpl implements JobDAO {
         activeTasks.forEach(a ->
                 log.debug("Found active task {} scheduled {} now {}", a.getTaskId(), a.getSchedule().getStartDate(), LocalDateTime.now()));
         return Flux.fromStream(activeTasks.stream())
-                .log()
                 .doOnNext(s -> s.getSchedule().setActive(false))
                 .doOnNext(t -> scheduleRepository.save(t.getSchedule()))
                 .map(TaskEntity::toTask)
@@ -75,7 +74,6 @@ public class DatabaseJobDAOImpl implements JobDAO {
     public Flux<Job<Task>> getJobHistory(@NonNull String jobId) {
         log.debug("Find job's history by job identifier {}", jobId);
         return Flux.fromStream(jobHistoryRepository.findByJobId(jobId).stream())
-                .log()
                 .map(JobHistoryEntity::toJob);
     }
 
@@ -84,7 +82,6 @@ public class DatabaseJobDAOImpl implements JobDAO {
         log.debug("Find jobs history by task identifier {}", taskId);
         List<JobHistoryEntity> byTaskId = jobHistoryRepository.findByTaskId(taskId);
         return Flux.fromStream(byTaskId.stream())
-                .log()
                 .map(JobHistoryEntity::toJob);
     }
 

@@ -35,7 +35,7 @@ public interface SubscriptionService extends AutoCloseable {
 
         ConnectableFlux<T> publish = flux.publish();
         publish.connect();
-        return publish.log();
+        return publish;
     }
 
 

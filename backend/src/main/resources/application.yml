@@ -9,3 +9,7 @@ org:
       slots: 2
 logging:
   level.: debug
+spring:
+  mvc:
+    favicon:
+      enabled: false
