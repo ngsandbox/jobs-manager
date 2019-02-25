@@ -27,12 +27,6 @@
             </th:block>
         </div>
     </li>
-    <!--<li class="nav-item right">-->
-    <!--<a class="nav-link" href="#" id="linkCreateTask" data-toggle="modal"-->
-    <!--data-target="#createTaskModal">-->
-    <!--Create task-->
-    <!--</a>-->
-    <!--</li>-->
 </ul>
 
 <!-- Modal -->
@@ -66,7 +60,7 @@
                     </div>
                     <div class="form-group" id="cronExpression">
                         <label for="createTaskExpression">Cron expression</label>
-                        <input type="text" required class="form-control" id="createTaskExpression">
+                        <input type="text" required class="form-control" id="createTaskExpression" placeholder="*/5 * * * * * (to run the task every 5 seconds)">
                     </div>
                     <div class="form-group  d-none" id="onDateExpression">
                         <label for="createTaskOnDate">Start date</label>
@@ -98,28 +92,56 @@
         <tbody id="tasksTable">
         <th:block th:each="task : ${tasks}">
             <tr>
-                <td><h6 th:text="${task.getTask().getStrategyCode()}"></h6></td>
-                <td style='width: 100px'>
-                    <button class="btn btn-primary" type="button" data-toggle="collapse"
-                            th:attr="
+                <td>
+                    <div class="row">
+                        <div class="col-9">
+                            <h6 th:text="${task.getTask().getStrategyCode()}"></h6>
+                        </div>
+                        <div class="col-3">
+                            <button class="btn btn-outline-info btn-sm float-right" type="button" data-toggle="collapse"
+                                    th:attr="
                                 data-target='#collapseTask'+${task.getTask().getId()},
                                 aria-controls='collapseTask'+${task.getTask().getId()}"
-                            aria-expanded="false"
-                            aria-controls="collapseExample">
-                        More &gt;&gt;
-                    </button>
-                </td>
-            </tr>
-            <tr class="collapse"
-                th:attr="id='collapseTask'+${task.getTask().getId()}">
-                <td colspan="2">
-                    <!--<div >-->
-                    <div class="card card-body">
-                        Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad
-                        squid. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt
-                        sapiente ea proident.
+                                    aria-expanded="false"
+                                    aria-controls="collapseExample">
+                                Details &gt;&gt;
+                            </button>
+                        </div>
                     </div>
-                    <!--</div>-->
+                    <div class="row collapse"
+                         th:attr="id='collapseTask'+${task.getTask().getId()}">
+                        <div class="col-12">
+                            <div class="row" th:if="${!task.getTask().getDetails().isEmpty()}">
+                                <div class="col-12 text-primary">Task details</div>
+                            </div>
+                            <div class="row" th:if="${!task.getTask().getDetails().isEmpty()}">
+                                <th:block th:each="detail : ${task.getTask().getDetails()}">
+                                    <div class="col-1"></div>
+                                    <div class="col-5" th:text="${detail.getCode()}"></div>
+                                    <div class="col-6" th:text="${detail.getValue()}"></div>
+                                </th:block>
+                            </div>
+                            <div class="row">
+                                <div class="col-12 text-primary">Scheduler details</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-1"></div>
+                                <div class="col-3">Type</div>
+                                <div class="col-5">Expression</div>
+                                <div class="col-2">Priority</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-1"></div>
+                                <div class="col-3" th:text="${task.getScheduler().getSchedulerCode()}"></div>
+                                <div class="col-5" th:text="${task.getScheduler().getExpression()}"></div>
+                                <div class="col-2" th:text="${task.getScheduler().getPriority()}"></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12" th:classappend="'jobsContainer'+${task.getTask().getId()}">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </td>
             </tr>
         </th:block>

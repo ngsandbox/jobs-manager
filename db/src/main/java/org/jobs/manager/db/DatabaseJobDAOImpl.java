@@ -24,6 +24,7 @@ import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.StreamSupport;
 
 @Slf4j
 @Transactional(rollbackOn = Exception.class)
@@ -128,5 +129,12 @@ public class DatabaseJobDAOImpl implements JobDAO {
     public void deleteTask(String taskId) {
         log.debug("Delete task {}", taskId);
         taskRepository.deleteById(taskId);
+    }
+
+    @Override
+    public Flux<Tuple2<Task, Scheduler>> getTaskInfos() {
+        log.debug("Get tasks info with schedulers");
+        return Flux.fromStream(StreamSupport.stream(taskRepository.findAll().spliterator(), false)
+                .map(TaskEntity::toTask));
     }
 }

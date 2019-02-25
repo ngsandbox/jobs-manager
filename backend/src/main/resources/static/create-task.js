@@ -27,7 +27,7 @@ function renderTasksMetadata(data) {
                     "" +
                     "<div class='form-group taskMetadata'>\n" +
                     "    <label for='" + prop + "Value'>" + prop + "</label>\n" +
-                    "    <input type='text' class='form-control createTaskProperty' data-propName='" + prop + "' id='" + prop + "Value'>\n" +
+                    "    <input type='text' class='form-control createTaskProperty' data-propname='" + prop + "' id='" + prop + "Value'>\n" +
                     "</div>" +
                     "")
             });
@@ -59,7 +59,7 @@ function onClickCreateTask() {
     $("#createTaskErrors").removeClass('d-block').addClass('d-none');
     $(".createTaskProperty").each(function (index, element) {
         let input = $(element);
-        properties[input.data("propName")] = input.val();
+        properties[input.data("propname")] = input.val();
     });
 
     let expression = '';

@@ -13,6 +13,10 @@ repositories {
     mavenCentral()
 }
 
+configurations {
+    developmentOnly
+}
+
 dependencies {
 
     compile project(":db")

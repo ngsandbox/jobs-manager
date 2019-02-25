@@ -29,6 +29,11 @@ public class TaskService {
         return jobDAO.getTasks();
     }
 
+    public Flux<Tuple2<Task, Scheduler>> getTaskInfos() {
+        log.debug("Get list of tasks with schedulers");
+        return jobDAO.getTaskInfos();
+    }
+
     public Flux<Job<Task>> getJobs(String taskId) {
         return jobDAO.getJobHistory(taskId);
     }

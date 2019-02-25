@@ -93,4 +93,9 @@ public class TestJobsDAOImpl implements JobDAO {
         log.warn("Not implemented");
         throw new RuntimeException("Not implemented");
     }
+
+    @Override
+    public Flux<Tuple2<Task, Scheduler>> getTaskInfos() {
+        return Flux.just(Tuples.of(cronTestJob.getTask(), cronTestJob.getScheduler()));
+    }
 }

@@ -39,6 +39,7 @@ public class JobExecutorApplicationTests {
         int TIMEOUT_SECS = 2;
         Job<TestTask> job = getTestJob(TIMEOUT_SECS, 0, null, false);
         StepVerifier.create(jobExecutor.run(job))
+                .expectNextMatches(j -> validateJobStatus(j, TaskStatus.QUEUED, "The job does not queued. " + j.getDescription()))
                 .expectComplete()
                 .verify();
     }

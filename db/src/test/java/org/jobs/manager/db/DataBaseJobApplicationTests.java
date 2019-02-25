@@ -58,6 +58,7 @@ class DataBaseJobApplicationTests {
                 .expectNextMatches(j -> j.getStatus() == TaskStatus.QUEUED)
                 .verifyComplete();
         StepVerifier.create(jobDAO.takeJobs(1))
+                .expectNextMatches(j -> j.getStatus() == TaskStatus.QUEUED)
                 .verifyComplete();
     }
 }

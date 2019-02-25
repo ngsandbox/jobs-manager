@@ -2,21 +2,15 @@ package org.jobs.manager.backend.controllers;
 
 import lombok.extern.slf4j.Slf4j;
 import org.jobs.manager.backend.models.TaskInfo;
-import org.jobs.manager.common.entities.EmailTask;
 import org.jobs.manager.common.schedulers.Schedulers;
 import org.jobs.manager.common.services.TaskService;
-import org.jobs.manager.common.shared.Task;
 import org.jobs.manager.common.shared.TaskStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -41,9 +35,10 @@ public class JobsManagerController {
 
     @GetMapping("/jobs")
     public String displayTasks(Model model) {
-        taskService.saveTask(new Task("asdfsdf", "SEND_EMAIL", Collections.emptyMap()), Schedulers.getCronScheduler("asd", "*/2 * * * * *", 0, true));
-        Iterable<TaskInfo> taskInfos = taskService.getTasks().map(TaskInfo::from)
-                .toIterable();
+        List<TaskInfo> taskInfos = taskService.getTaskInfos()
+                .toStream()
+                .map(t -> TaskInfo.from(t.getT1(), t.getT2()))
+                .collect(Collectors.toList());
         Map<String, String> strategies = this.strategies.stream().collect(Collectors.toMap(TaskStrategy::getCode, TaskStrategy::getDescription));
 
         model.addAttribute("tasks", taskInfos);

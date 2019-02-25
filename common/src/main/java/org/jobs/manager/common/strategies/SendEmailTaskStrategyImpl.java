@@ -10,11 +10,14 @@ import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
 import java.util.Arrays;
+import java.util.Random;
 
 @Component
 @ToString(callSuper = true)
 @Slf4j
 public class SendEmailTaskStrategyImpl implements TaskStrategy<EmailTask> {
+
+    private final Random random = new Random();
 
     private static final String SEND_EMAIL_STRATEGY_CODE = "SEND_EMAIL";
 

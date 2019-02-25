@@ -89,16 +89,15 @@ public class JobExecutor implements AutoCloseable {
 
             Flux<Job<T>> flux = Flux.concat(
                     Mono.just(job.toStatus(TaskStatus.RUNNING)),
-                    taskStrategy.execute(job.getTask()).flatMap(aVoid -> Mono.empty()),
+                    taskStrategy.execute(job.getTask())
+                            .flatMap(aVoid -> Mono.empty()),
                     Mono.just(job.toStatus(TaskStatus.SUCCESS))
             );
 
-            Flux<Job<T>> onErrorFlux = flux
+            return flux
                     .doOnNext(tJob -> subscriptionService.publish(new JobSubscriptionEvent(tJob, false)))
                     .doOnComplete(slotsCount::incrementAndGet) // increment back available slots
                     .onErrorResume((ex) -> onFluxError(job, ex));
-            //return onErrorFlux.subscribeOn(scheduler);
-            return onErrorFlux;
         } catch (Exception ex) {
             slotsCount.incrementAndGet(); // increment back available slots
             log.error("Fatal error during the execution for strategy {} and job {}", taskStrategy, job, ex);

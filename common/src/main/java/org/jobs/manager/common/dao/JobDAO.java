@@ -28,4 +28,6 @@ public interface JobDAO {
     void save(Job<Task> job);
 
     void deleteTask(String taskId);
+
+    Flux<Tuple2<Task, Scheduler>> getTaskInfos();
 }

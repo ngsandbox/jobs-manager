@@ -40,17 +40,16 @@ subprojects {
         compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.8.1'
 
 
-        compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: project['jackson.version']
         compile(group: 'org.slf4j', name: 'slf4j-api', version: project['slf4j.version'])
         compile(group: 'org.slf4j', name: 'jul-to-slf4j', version: project['slf4j.version'])
         compile(group: 'ch.qos.logback', name: 'logback-classic', version: project['logback.version'])
         compile(group: 'ch.qos.logback', name: 'logback-core', version: project['logback.version'])
 
-        compile "com.fasterxml.jackson.core:jackson-core:${project['com.fasterxml.jackson.version']}"
-        compile "com.fasterxml.jackson.core:jackson-databind:${project['com.fasterxml.jackson.version']}"
-        compile "com.fasterxml.jackson.core:jackson-annotations:${project['com.fasterxml.jackson.version']}"
-        compile "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:${project['com.fasterxml.jackson.version']}"
-        compile "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${project["com.fasterxml.jackson.version"]}"
+        compile "com.fasterxml.jackson.core:jackson-core:${project['jackson.version']}"
+        compile "com.fasterxml.jackson.core:jackson-databind:${project['jackson.version']}"
+        compile "com.fasterxml.jackson.core:jackson-annotations:${project['jackson.version']}"
+        compile "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:${project['jackson.version']}"
+        compile "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${project["jackson.version"]}"
 
         compileOnly group: 'org.projectlombok', name: 'lombok', version: project['lombok.version']
         annotationProcessor group: 'org.projectlombok', name: 'lombok', version: project['lombok.version']
