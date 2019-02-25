@@ -5,12 +5,13 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.jobs.manager.common.shared.Task;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import java.io.Serializable;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -19,18 +20,23 @@ import java.util.stream.Collectors;
 @Setter
 @NoArgsConstructor
 @ToString
-public class TaskModel {
+public class TaskModel implements Serializable {
 
+    private static final long serialVersionUID = 449603100569647644L;
     /**
      * Uniquie task identifier
+     *
+     * @implSpec new id will be generated if this one will be empty
      */
     private String id;
 
     /**
      * Strategy strategyCode
      */
+    @NotNull(message = "Please provide task strategy code")
     private String strategyCode;
 
+    @Valid
     private Set<TaskDetail> details = new HashSet<>();
 
     private TaskModel(String id,
@@ -50,7 +56,8 @@ public class TaskModel {
                     .collect(Collectors
                             .toMap(TaskDetail::getCode, TaskDetail::getValue));
         }
-        return new Task(id, strategyCode, taskDetails);
+        String taskId = StringUtils.isEmpty(id) ? UUID.randomUUID().toString() : id;
+        return new Task(taskId, strategyCode, taskDetails);
     }
 
     public static TaskModel toModel(Task task) {

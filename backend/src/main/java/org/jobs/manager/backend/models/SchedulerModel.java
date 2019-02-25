@@ -9,6 +9,8 @@ import org.jobs.manager.backend.BackendException;
 import org.jobs.manager.common.schedulers.Scheduler;
 import org.jobs.manager.common.schedulers.Schedulers;
 
+import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -17,21 +19,26 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @ToString
-public class SchedulerModel {
+public class SchedulerModel implements Serializable {
 
+    private static final long serialVersionUID = -4161299462459297523L;
+
+    @NotNull(message = "Scheduler code should be specified")
     private String schedulerCode;
 
+    @NotNull(message = "Please provide scheduler expression")
     private String expression;
 
-    private int priority;
+    @NotNull(message = "Please provide priority of the task")
+    private Integer priority;
 
-    private boolean active;
+    private Boolean active;
 
 
     private SchedulerModel(String strategyCode,
-                          String expression,
-                          int priority,
-                          boolean active) {
+                           String expression,
+                           int priority,
+                           boolean active) {
         this.active = active;
         this.schedulerCode = strategyCode;
         this.expression = expression;
@@ -45,7 +52,7 @@ public class SchedulerModel {
                 .id(UUID.randomUUID().toString())
                 .expression(expression)
                 .priority(priority)
-                .active(active)
+                .active(active != null ? active : true)
                 .build();
         return scheduler.orElseThrow(() -> new BackendException("Could not create strategy with schedulerCode: " + schedulerCode));
     }

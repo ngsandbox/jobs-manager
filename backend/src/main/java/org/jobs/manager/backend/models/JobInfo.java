@@ -8,13 +8,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.jobs.manager.common.entities.Job;
 import org.jobs.manager.common.entities.TaskStatus;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Slf4j
 @Getter
 @Setter
 @ToString
-public class JobInfo {
+public class JobInfo implements Serializable {
+
+    private static final long serialVersionUID = -8318358823713852533L;
+
     private String id;
 
     private TaskModel task;

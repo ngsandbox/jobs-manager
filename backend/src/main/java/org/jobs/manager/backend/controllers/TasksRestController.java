@@ -60,10 +60,8 @@ public class TasksRestController {
     }
 
     @PostMapping(path = "/tasks")
-    public void createTask(@RequestBody(required = false) TaskInfo task) {
+    public void createTask(@Valid @RequestBody TaskInfo task) {
         log.debug("Save info {}", task);
-        //Optional<TaskInfo> taskInfo = JsonHelper.fromJson(task, TaskInfo.class);
-
         taskService.saveTask(task.getTask().takeTask(), task.getScheduler().takeScheduler());
     }
 

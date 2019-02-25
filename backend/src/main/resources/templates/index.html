@@ -16,9 +16,6 @@
     <li class="nav-item">
         <a class="nav-link active" href="#" id="linkJobsManager">Jobs Manager</a>
     </li>
-    <li class="nav-item">
-        <a class="nav-link" href="#" id="linkJobsHistory">Jobs history</a>
-    </li>
     <li class="nav-item right">
         <!-- Button trigger modal -->
         <a class="nav-link" href="#" id="linkCreateTask" data-toggle="modal"
@@ -34,12 +31,15 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="createTaskModalLabel"><span id="createTaskDescription">Create task</span></h5>
+                <h5 class="modal-title" id="createTaskModalLabel"><span id="createTaskDescription">Create task</span>
+                </h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
+                <div class="alert alert-danger d-none" id="createTaskErrors" role="alert" hidden="hidden">
+                </div>
                 <form id="createTaskForm">
                     <input type="hidden" id="createTaskStrategyCode"/>
                     <div class="form-group">
@@ -50,7 +50,7 @@
                         <label for="createTaskPriority">Priority</label>
                         <input type="number" required class="form-control" id="createTaskPriority">
                     </div>
-                 </form>
+                </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -61,22 +61,39 @@
 </div>
 <div id="main-content" class="container">
     <div class="page-header">
-        <h3>Jobs Manager</h3>
-        <span class="badge" id="taskProcessed">0</span>
+        <h3>Jobs Manager
+            <span class="badge badge-success badge-pill float-right" id="jobSuccess">0</span>
+            <span class="badge badge-danger badge-pill float-right" id="jobFail">0</span>
+        </h3>
+
     </div>
 
     <table id="tasksList" class="table table-hover">
         <tbody id="tasksTable">
         <th:block th:each="task : ${tasks}">
             <tr>
-                <td><h3 th:text="${task.getTask().getStrategyCode()}"></h3></td>
-                <td style='width: 150px'>
-                    <form action="/jobs/display" method="post">
-                        <input type="hidden" name="taskId" th:attr="value=${task.getTask().getId()}">
-                        <button type='submit'
-                                class='btn btn-primary'>More &gt;&gt;
-                        </button>
-                    </form>
+                <td><h6 th:text="${task.getTask().getStrategyCode()}"></h6></td>
+                <td style='width: 100px'>
+                    <button class="btn btn-primary" type="button" data-toggle="collapse"
+                            th:attr="
+                                data-target='#collapseTask'+${task.getTask().getId()},
+                                aria-controls='collapseTask'+${task.getTask().getId()}"
+                            aria-expanded="false"
+                            aria-controls="collapseExample">
+                        More &gt;&gt;
+                    </button>
+                </td>
+            </tr>
+            <tr class="collapse"
+                th:attr="id='collapseTask'+${task.getTask().getId()}">
+                <td colspan="2">
+                    <!--<div >-->
+                    <div class="card card-body">
+                        Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad
+                        squid. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt
+                        sapiente ea proident.
+                    </div>
+                    <!--</div>-->
                 </td>
             </tr>
         </th:block>
@@ -84,5 +101,6 @@
     </table>
 </div>
 <script type="application/javascript" src="/app.js"></script>
+<script type="application/javascript" src="/create-task.js"></script>
 </body>
 </html>
