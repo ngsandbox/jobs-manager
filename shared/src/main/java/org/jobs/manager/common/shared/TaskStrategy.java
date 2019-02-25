@@ -15,6 +15,12 @@ public interface TaskStrategy<T extends Task> {
     String getDescription();
 
     /**
+     * Get information about task's properties and description
+     * @return
+     */
+    TaskMetadata getTaskMetadata();
+
+    /**
      * return Mono-wrapper with execution of the provided task
      */
     Mono<Void> execute(Task task);

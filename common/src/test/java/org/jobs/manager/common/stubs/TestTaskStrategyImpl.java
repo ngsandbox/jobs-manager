@@ -4,11 +4,13 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.jobs.manager.common.JobException;
 import org.jobs.manager.common.shared.Task;
+import org.jobs.manager.common.shared.TaskMetadata;
 import org.jobs.manager.common.shared.TaskStrategy;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
+import java.util.Collections;
 
 @Component
 @ToString(callSuper = true)
@@ -24,6 +26,11 @@ public class TestTaskStrategyImpl implements TaskStrategy<TestTask> {
     @Override
     public String getDescription() {
         return "Test strategy";
+    }
+
+    @Override
+    public TaskMetadata getTaskMetadata() {
+        return new TaskMetadata(getCode(), getDescription(), Collections.emptyList());
     }
 
     @Override

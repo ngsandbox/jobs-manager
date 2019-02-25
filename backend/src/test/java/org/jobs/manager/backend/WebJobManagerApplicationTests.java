@@ -87,12 +87,6 @@ class WebJobManagerApplicationTests {
                 .returnResult(String.class)
                 .getResponseBody()
                 .log();
-//        String s = jobFlux.blockFirst(Duration.ofMillis(10000));
-//        log.debug("Received {}", s);
-//        StepVerifier.create(jobFlux)
-//                .expectNextMatches(Objects::nonNull)
-//                .thenCancel()
-//                .verify(Duration.ofMillis(4500));
     }
 }
 

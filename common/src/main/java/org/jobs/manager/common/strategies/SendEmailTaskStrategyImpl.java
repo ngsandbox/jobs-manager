@@ -4,9 +4,12 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.jobs.manager.common.entities.EmailTask;
 import org.jobs.manager.common.shared.Task;
+import org.jobs.manager.common.shared.TaskMetadata;
 import org.jobs.manager.common.shared.TaskStrategy;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
+
+import java.util.Arrays;
 
 @Component
 @ToString(callSuper = true)
@@ -22,7 +25,16 @@ public class SendEmailTaskStrategyImpl implements TaskStrategy<EmailTask> {
 
     @Override
     public String getDescription() {
-        return "Sending emails to the provided consumers";
+        return "Send email to the recipients";
+    }
+
+    @Override
+    public TaskMetadata getTaskMetadata() {
+        return new TaskMetadata(getCode(), getDescription(),
+                Arrays.asList(EmailTask.FROM_CODE,
+                        EmailTask.RECIPIENTS_CODE,
+                        EmailTask.SUBJECT_CODE,
+                        EmailTask.BODY_CODE));
     }
 
     @Override

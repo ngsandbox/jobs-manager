@@ -17,6 +17,7 @@ dependencies {
 
     compile project(":db")
 
+    implementation group: 'org.springframework.boot', name: 'spring-boot-devtools', version: project['spring-cloud.version']
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-websocket', version: project['spring-cloud.version']
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-webflux', version: project['spring-cloud.version']
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: project['spring-cloud.version']

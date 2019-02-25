@@ -12,7 +12,7 @@ public interface Scheduler extends Serializable {
     String getId();
 
     /**
-     * Unique strategyCode of the scheduler
+     * Unique code of the scheduler
      */
     String getCode();
 

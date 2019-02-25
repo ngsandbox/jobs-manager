@@ -32,8 +32,8 @@ public class ScheduleEntity implements Serializable {
     @Column(name = "taskId", insertable = false, updatable = false)
     private String taskId;
 
-    @Column(name = "strategyCode")
-    private String strategyCode;
+    @Column(name = "schedulerCode")
+    private String schedulerCode;
 
     @Column(name = "expression")
     private String expression;
@@ -51,7 +51,7 @@ public class ScheduleEntity implements Serializable {
         ScheduleEntity entity = new ScheduleEntity();
         entity.scheduleId = scheduler.getId();
         entity.taskId = taskId;
-        entity.strategyCode = scheduler.getCode();
+        entity.schedulerCode = scheduler.getCode();
         entity.expression = scheduler.getExpression();
         entity.startDate = scheduler.getStartDate();
         entity.priority = scheduler.getPriority();
@@ -62,13 +62,13 @@ public class ScheduleEntity implements Serializable {
     Scheduler toTaskScheduler() {
         Optional<? extends Scheduler> scheduler = Schedulers.builder()
                 .id(scheduleId)
-                .strategyCode(strategyCode)
+                .schedulerCode(schedulerCode)
                 .expression(expression)
                 .startDate(startDate)
                 .priority(priority)
                 .active(active)
                 .build();
         return scheduler
-                .orElseThrow(() -> new JobException("Scheduler not found by strategyCode " + getStrategyCode()));
+                .orElseThrow(() -> new JobException("Scheduler not found by schedulerCode " + schedulerCode));
     }
 }

@@ -12,13 +12,74 @@
 <body>
 <noscript><h2 style="color: #ff0000">Seems your browser doesn't support Javascript! Websocket relies on Javascript being
     enabled. Please enable Javascript and reload this page!</h2></noscript>
+<ul class="nav">
+    <li class="nav-item">
+        <a class="nav-link active" href="#" id="linkJobsManager">Jobs Manager</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="#" id="linkJobsHistory">Jobs history</a>
+    </li>
+    <li class="nav-item right">
+        <!-- Button trigger modal -->
+        <a class="nav-link" href="#" id="linkCreateTask" data-toggle="modal"
+           data-target="#createTaskModal">
+            Create task
+        </a>
+    </li>
+</ul>
+
+<!-- Modal -->
+<div class="modal fade" id="createTaskModal" tabindex="-1" role="dialog" aria-labelledby="createTaskModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createTaskModalLabel"><span id="createTaskDescription">Create task</span></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="createTaskForm">
+                    <input type="hidden" id="createTaskStrategyCode"/>
+                    <div class="form-group">
+                        <label for="createTaskExpression">Cron expression</label>
+                        <input type="text" required class="form-control" id="createTaskExpression">
+                    </div>
+                    <div class="form-group">
+                        <label for="createTaskPriority">Priority</label>
+                        <input type="number" required class="form-control" id="createTaskPriority">
+                    </div>
+                 </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="createTaskBtn">Create</button>
+            </div>
+        </div>
+    </div>
+</div>
 <div id="main-content" class="container">
     <div class="page-header">
         <h3>Jobs Manager</h3>
+        <span class="badge" id="taskProcessed">0</span>
     </div>
-    <table class="table table-hover">
-        <tbody id="tasksTable">
 
+    <table id="tasksList" class="table table-hover">
+        <tbody id="tasksTable">
+        <th:block th:each="task : ${tasks}">
+            <tr>
+                <td><h3 th:text="${task.getTask().getStrategyCode()}"></h3></td>
+                <td style='width: 150px'>
+                    <form action="/jobs/display" method="post">
+                        <input type="hidden" name="taskId" th:attr="value=${task.getTask().getId()}">
+                        <button type='submit'
+                                class='btn btn-primary'>More &gt;&gt;
+                        </button>
+                    </form>
+                </td>
+            </tr>
+        </th:block>
         </tbody>
     </table>
 </div>

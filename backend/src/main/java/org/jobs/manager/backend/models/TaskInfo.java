@@ -16,10 +16,8 @@ import javax.validation.constraints.NotNull;
 @EqualsAndHashCode
 public class TaskInfo {
 
-    @NotNull
     private TaskModel task;
 
-    @NotNull
     private SchedulerModel scheduler;
 
     public TaskInfo(TaskModel task, SchedulerModel scheduler) {

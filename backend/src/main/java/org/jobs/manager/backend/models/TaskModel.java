@@ -1,11 +1,17 @@
 package org.jobs.manager.backend.models;
 
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.jobs.manager.common.shared.Task;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 
 @Slf4j
@@ -25,11 +31,11 @@ public class TaskModel {
      */
     private String strategyCode;
 
-    private Map<String, String> details = new HashMap<>();
+    private Set<TaskDetail> details = new HashSet<>();
 
     private TaskModel(String id,
                       String strategyCode,
-                      Map<String, String> details) {
+                      Set<TaskDetail> details) {
         this.id = id;
         this.strategyCode = strategyCode;
         this.details = details;
@@ -38,7 +44,13 @@ public class TaskModel {
 
     public Task takeTask() {
         log.debug("Convert from transport task {}", this);
-        return new Task(id, strategyCode, details);
+        Map<String, String> taskDetails = new HashMap<>();
+        if (details != null) {
+            taskDetails = details.stream()
+                    .collect(Collectors
+                            .toMap(TaskDetail::getCode, TaskDetail::getValue));
+        }
+        return new Task(id, strategyCode, taskDetails);
     }
 
     public static TaskModel toModel(Task task) {
@@ -47,8 +59,14 @@ public class TaskModel {
             return null;
         }
 
+        Set<TaskDetail> taskDetails = task.getDetails()
+                .entrySet()
+                .stream()
+                .map(e -> new TaskDetail(e.getKey(), e.getValue()))
+                .collect(Collectors.toSet());
+
         return new TaskModel(task.getId(),
                 task.getStrategyCode(),
-                task.getDetails());
+                taskDetails);
     }
 }

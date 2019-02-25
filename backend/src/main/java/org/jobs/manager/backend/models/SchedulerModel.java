@@ -9,7 +9,6 @@ import org.jobs.manager.backend.BackendException;
 import org.jobs.manager.common.schedulers.Scheduler;
 import org.jobs.manager.common.schedulers.Schedulers;
 
-import javax.validation.constraints.NotNull;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -20,9 +19,8 @@ import java.util.UUID;
 @ToString
 public class SchedulerModel {
 
-    private String strategyCode;
+    private String schedulerCode;
 
-    @NotNull
     private String expression;
 
     private int priority;
@@ -35,7 +33,7 @@ public class SchedulerModel {
                           int priority,
                           boolean active) {
         this.active = active;
-        this.strategyCode = strategyCode;
+        this.schedulerCode = strategyCode;
         this.expression = expression;
         this.priority = priority;
     }
@@ -43,13 +41,13 @@ public class SchedulerModel {
     public Scheduler takeScheduler() {
         log.debug("Convert from transport scheduler {}", this);
         Optional<? extends Scheduler> scheduler = Schedulers.builder()
-                .strategyCode(strategyCode)
+                .schedulerCode(schedulerCode)
                 .id(UUID.randomUUID().toString())
                 .expression(expression)
                 .priority(priority)
                 .active(active)
                 .build();
-        return scheduler.orElseThrow(() -> new BackendException("Could not create strategy with strategyCode: " + strategyCode));
+        return scheduler.orElseThrow(() -> new BackendException("Could not create strategy with schedulerCode: " + schedulerCode));
     }
 
     public static SchedulerModel toModel(Scheduler scheduler) {
