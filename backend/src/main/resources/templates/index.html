@@ -42,9 +42,25 @@
                 </div>
                 <form id="createTaskForm">
                     <input type="hidden" id="createTaskStrategyCode"/>
-                    <div class="form-group">
+                    <div class="form-check form-check-inline">
+                        <label class="form-check-label">
+                            <input class="form-check-input taskStrategyType" type="radio" name="taskSchedulerStrategy"
+                                   id="cronEnabled" value="CRON_SCHEDULER" checked> Cron
+                        </label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <label class="form-check-label">
+                            <input class="form-check-input taskStrategyType" type="radio" name="taskSchedulerStrategy"
+                                   id="onDateEnabled" value="ON_DATE_SCHEDULER"> OnDate
+                        </label>
+                    </div>
+                    <div class="form-group" id="cronExpression">
                         <label for="createTaskExpression">Cron expression</label>
                         <input type="text" required class="form-control" id="createTaskExpression">
+                    </div>
+                    <div class="form-group  d-none" id="onDateExpression">
+                        <label for="createTaskOnDate">Start date</label>
+                        <input type="datetime-local" required class="form-control" id="createTaskOnDate">
                     </div>
                     <div class="form-group">
                         <label for="createTaskPriority">Priority</label>
