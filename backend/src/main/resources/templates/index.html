@@ -16,13 +16,23 @@
     <li class="nav-item">
         <a class="nav-link active" href="#" id="linkJobsManager">Jobs Manager</a>
     </li>
-    <li class="nav-item right">
-        <!-- Button trigger modal -->
-        <a class="nav-link" href="#" id="linkCreateTask" data-toggle="modal"
-           data-target="#createTaskModal">
-            Create task
-        </a>
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true"
+           aria-expanded="false">Create</a>
+        <div class="dropdown-menu">
+            <th:block th:each="strategy : ${strategies}">
+                <a class="dropdown-item createTaskMenu" href="#"
+                   th:attr="data-strategy=${strategy.getKey()}"
+                   th:text="${strategy.getValue()}"></a>
+            </th:block>
+        </div>
     </li>
+    <!--<li class="nav-item right">-->
+    <!--<a class="nav-link" href="#" id="linkCreateTask" data-toggle="modal"-->
+    <!--data-target="#createTaskModal">-->
+    <!--Create task-->
+    <!--</a>-->
+    <!--</li>-->
 </ul>
 
 <!-- Modal -->

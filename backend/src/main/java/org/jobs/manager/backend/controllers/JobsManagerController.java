@@ -34,6 +34,10 @@ public class JobsManagerController {
         this.strategies = strategies;
     }
 
+    @GetMapping("/")
+    public ModelAndView redirect() {
+        return new ModelAndView("redirect:/jobs");
+    }
 
     @GetMapping("/jobs")
     public String displayTasks(Model model) {

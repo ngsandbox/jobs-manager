@@ -20,7 +20,6 @@ import reactor.core.publisher.Mono;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -46,10 +45,12 @@ public class TasksRestController {
         this.webSocket = webSocket;
     }
 
-    @GetMapping("/tasks/metadata")
-    public Flux<TaskMetadata> tasksMetadata() {
-        log.debug("Provide tasks metadata");
-        return Flux.fromStream(strategies.stream().map(TaskStrategy::getTaskMetadata));
+    @GetMapping("/tasks/metadata/{strategyCode}")
+    public Flux<TaskMetadata> tasksMetadata(@PathVariable String strategyCode) {
+        log.debug("Provide tasks metadata for strategy code {}", strategyCode);
+        return Flux.fromStream(strategies.stream()
+                .filter(s -> s.getCode().equals(strategyCode))
+                .map(TaskStrategy::getTaskMetadata));
     }
 
     @GetMapping("/tasks")

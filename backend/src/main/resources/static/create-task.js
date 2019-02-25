@@ -1,14 +1,41 @@
 let taskMetadata;
 
 $(function () {
-    $.get("/v1/tasks/metadata", renderTasksMetadata);
     $(".taskStrategyType").click(onClickToggleSchedulerType);
-    $("#createTaskBtn").click(createTask);
+    $("#createTaskBtn").click(onClickCreateTask);
+    $(".createTaskMenu").click(onClickCreateTaskMenu);
     $("form").on('submit', function (e) {
         e.preventDefault();
     });
-
 });
+
+function onClickCreateTaskMenu() {
+    let strategy = $(this).data('strategy')
+    $("#createTaskStrategyCode").val(strategy);
+    $(".taskMetadata").remove();
+    $.get("/v1/tasks/metadata/" + strategy, renderTasksMetadata);
+}
+
+function renderTasksMetadata(data) {
+    console.log("Task metadata", data);
+    if (data && data.length) {
+        taskMetadata = data.pop();
+        $("#createTaskDescription").text(taskMetadata.description);
+        if (taskMetadata.properties) {
+            taskMetadata.properties.forEach(function (prop) {
+                $("#createTaskForm").append(
+                    "" +
+                    "<div class='form-group taskMetadata'>\n" +
+                    "    <label for='" + prop + "Value'>" + prop + "</label>\n" +
+                    "    <input type='text' class='form-control createTaskProperty' data-propName='" + prop + "' id='" + prop + "Value'>\n" +
+                    "</div>" +
+                    "")
+            });
+        }
+    }
+
+    $("#createTaskModal").modal("show");
+}
 
 
 function onClickToggleSchedulerType(element) {
@@ -25,7 +52,9 @@ function onClickToggleSchedulerType(element) {
     }
 }
 
-function createTask() {
+function onClickCreateTask() {
+    let strategyCode = $("#createTaskStrategyCode").val();
+    console.log("Create task", strategyCode);
     let properties = [];
     $("#createTaskErrors").removeClass('d-block').addClass('d-none');
     $(".createTaskProperty").each(function (index, element) {
@@ -34,7 +63,6 @@ function createTask() {
     });
 
     let expression = '';
-    let strategyCode = $("#createTaskStrategyCode").val();
     let schedulerCode = $("input:radio[name='taskSchedulerStrategy']:checked").val();//$("#createTaskStrategyCode").val();
     if (schedulerCode === 'ON_DATE_SCHEDULER') {
         expression = $("#createTaskOnDate").val();
@@ -94,25 +122,3 @@ function createTask() {
         url: '/v1/tasks'
     });
 }
-
-
-function renderTasksMetadata(data) {
-    console.log("Task metadata", data);
-    if (data && data.length) {
-        taskMetadata = data.pop();
-        $("#createTaskStrategyCode").val(taskMetadata.strategyCode);
-        $("#createTaskDescription").text(taskMetadata.description);
-        if (taskMetadata.properties) {
-            taskMetadata.properties.forEach(function (prop) {
-                $("#createTaskForm").append(
-                    "" +
-                    "<div class='form-group'>\n" +
-                    "    <label for='" + prop + "Value'>" + prop + "</label>\n" +
-                    "    <input type='text' class='form-control createTaskProperty' data-propName='" + prop + "' id='" + prop + "Value'>\n" +
-                    "</div>" +
-                    "")
-            });
-        }
-    }
-}
-

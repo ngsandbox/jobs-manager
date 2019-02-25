@@ -2,7 +2,7 @@ package org.jobs.manager.common.strategies;
 
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
-import org.jobs.manager.common.entities.EmailTask;
+import org.jobs.manager.common.entities.CopyFileTask;
 import org.jobs.manager.common.shared.Task;
 import org.jobs.manager.common.shared.TaskMetadata;
 import org.jobs.manager.common.shared.TaskStrategy;
@@ -14,27 +14,25 @@ import java.util.Arrays;
 @Component
 @ToString(callSuper = true)
 @Slf4j
-public class SendEmailTaskStrategyImpl implements TaskStrategy<EmailTask> {
+public class CopyFileStrategyImpl implements TaskStrategy<CopyFileTask> {
 
-    private static final String SEND_EMAIL_STRATEGY_CODE = "SEND_EMAIL";
+    public static final String COPY_FILE_STRATEGY_CODE = "COPY_FILE";
 
     @Override
     public String getCode() {
-        return SEND_EMAIL_STRATEGY_CODE;
+        return COPY_FILE_STRATEGY_CODE;
     }
 
     @Override
     public String getDescription() {
-        return "Send email";
+        return "Copy file";
     }
 
     @Override
     public TaskMetadata getTaskMetadata() {
         return new TaskMetadata(getCode(), getDescription(),
-                Arrays.asList(EmailTask.FROM_CODE,
-                        EmailTask.RECIPIENTS_CODE,
-                        EmailTask.SUBJECT_CODE,
-                        EmailTask.BODY_CODE));
+                Arrays.asList(CopyFileTask.FROM_CODE,
+                        CopyFileTask.TO_CODE));
     }
 
     @Override
