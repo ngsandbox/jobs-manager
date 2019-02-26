@@ -62,6 +62,13 @@ class WebJobManagerApplicationTests {
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(TaskInfo.class);
+
+        webTestClient
+                .delete()
+                .uri("/v1/tasks/{taskId}", taskInfo.getTask().getId())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(Void.class);
     }
 
     @Test

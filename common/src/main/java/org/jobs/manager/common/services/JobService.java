@@ -15,6 +15,9 @@ import java.util.concurrent.TimeUnit;
 
 import static org.jobs.manager.common.utils.CloseUtils.closeQuite;
 
+/**
+ * Jobs service is responsible for scheduling and monitoring tasks activity
+ */
 @Slf4j
 @Service
 public class JobService implements AutoCloseable {

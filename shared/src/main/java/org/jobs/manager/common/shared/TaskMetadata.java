@@ -12,7 +12,18 @@ import java.util.List;
 @NoArgsConstructor
 @ToString
 public class TaskMetadata {
+    /**
+     * Task's strategy code
+     */
     private String strategyCode;
+
+    /**
+     * Title of the tasks
+     */
     private String description;
+
+    /**
+     * Codes of the additional properties of the task
+     */
     private List<String> properties;
 }

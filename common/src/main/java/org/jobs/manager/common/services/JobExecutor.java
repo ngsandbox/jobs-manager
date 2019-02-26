@@ -3,18 +3,16 @@ package org.jobs.manager.common.services;
 import lombok.extern.slf4j.Slf4j;
 import org.jobs.manager.common.configs.JobManagerProperties;
 import org.jobs.manager.common.entities.Job;
-import org.jobs.manager.common.shared.Task;
 import org.jobs.manager.common.entities.TaskStatus;
-import org.jobs.manager.common.subscription.events.JobSubscriptionEvent;
-import org.jobs.manager.common.subscription.SubscriptionService;
+import org.jobs.manager.common.shared.Task;
 import org.jobs.manager.common.shared.TaskStrategy;
+import org.jobs.manager.common.subscription.SubscriptionService;
+import org.jobs.manager.common.subscription.events.JobSubscriptionEvent;
 import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Scheduler;
-import reactor.core.scheduler.Schedulers;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -27,6 +25,9 @@ import java.util.stream.Collectors;
 
 import static org.jobs.manager.common.utils.CloseUtils.closeQuite;
 
+/**
+ * Job executor responsible for sending for execution job to the strategy
+ */
 @Slf4j
 @Component
 public class JobExecutor implements AutoCloseable {
@@ -34,7 +35,6 @@ public class JobExecutor implements AutoCloseable {
     private final SubscriptionService subscriptionService;
     private final ExecutorService executorService;
     private final Map<String, TaskStrategy<? extends Task>> strategies;
-    private final Scheduler scheduler;
     private final AtomicInteger slotsCount;
 
     @Autowired
@@ -52,7 +52,6 @@ public class JobExecutor implements AutoCloseable {
                             throw new IllegalStateException("Collision detected for strategy strategyCode " + o.getCode());
                         }));
         this.strategies = Collections.unmodifiableMap(jobStrategyMap);
-        this.scheduler = Schedulers.fromExecutorService(executorService);
     }
 
     /**

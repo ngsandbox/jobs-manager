@@ -16,7 +16,6 @@ public interface TaskStrategy<T extends Task> {
 
     /**
      * Get information about task's properties and description
-     * @return
      */
     TaskMetadata getTaskMetadata();
 

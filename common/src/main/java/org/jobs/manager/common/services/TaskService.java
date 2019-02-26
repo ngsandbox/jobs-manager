@@ -34,19 +34,24 @@ public class TaskService {
         return jobDAO.getTaskInfos();
     }
 
-    public Flux<Job<Task>> getJobs(String taskId) {
-        return jobDAO.getJobHistory(taskId);
-    }
-
+    /**
+     * Save a task with scheduler
+     */
     public void saveTask(@NonNull Task task, Scheduler scheduler) {
+        log.debug("Save task {} with scheduler {}", task, scheduler);
         jobDAO.save(task, scheduler);
     }
 
+    /**
+     * Delete task by id
+     */
     public void deleteTask(@NonNull String taskId) {
+        log.debug("Delete task with id {}", taskId);
         jobDAO.deleteTask(taskId);
     }
 
     public Mono<Tuple2<Task, Scheduler>> getTaskInfo(String taskId) {
+        log.debug("Get task and scheduler by id {}", taskId);
         return jobDAO.getTaskInfo(taskId);
     }
 }

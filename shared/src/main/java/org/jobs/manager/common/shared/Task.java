@@ -25,6 +25,9 @@ public class Task implements Serializable {
      */
     private final String strategyCode;
 
+    /**
+     * Additional details for tash execution
+     */
     private final Map<String, String> details;
 
     @Builder
